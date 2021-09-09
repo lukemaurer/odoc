@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>Raw_grammar (odoc.deps.base.Base.Sexp.Private.Raw_grammar)</title>
+  <link rel="stylesheet" href="../../../../../../odoc.css"/>
+  <meta charset="utf-8"/><meta name="generator" content="odoc %%VERSION%%"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <script src="../../../../../../../highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+ </head>
+ <body class="odoc">
+  <nav class="odoc-nav"><a href="../index.html">Up</a> – 
+   <a href="../../../../../../index.html">odoc</a> &#x00BB; 
+   <a href="../../../../../index.html">deps</a> &#x00BB; 
+   <a href="../../../../index.html">base</a> &#x00BB; 
+   <a href="../../../index.html">Base</a> &#x00BB; 
+   <a href="../../index.html">Sexp</a> &#x00BB; 
+   <a href="../index.html">Private</a> &#x00BB; Raw_grammar
+  </nav>
+  <header class="odoc-preamble">
+   <h1>Module <code><span>Private.Raw_grammar</span></code></h1>
+  </header>
+  <div class="odoc-content">
+   <div class="odoc-spec">
+    <div class="spec type" id="type-label" class="anchored">
+     <a href="#type-label" class="anchor"></a>
+     <code><span><span class="keyword">type</span> label</span>
+      <span> = string</span>
+     </code>
+    </div>
+   </div>
+   <div class="odoc-spec">
+    <div class="spec type" id="type-generic_group_id" class="anchored">
+     <a href="#type-generic_group_id" class="anchor"></a>
+     <code><span><span class="keyword">type</span> generic_group_id</span>
+      <span> = string</span>
+     </code>
+    </div>
+   </div>
+   <div class="odoc-spec">
+    <div class="spec type" id="type-group_id" class="anchored">
+     <a href="#type-group_id" class="anchor"></a>
+     <code><span><span class="keyword">type</span> group_id</span>
+      <span> = <span class="xref-unresolved">Sexplib0__</span>.Lazy_group_id
+       .t
+      </span>
+     </code>
+    </div>
+   </div>
+   <div class="odoc-spec">
+    <div class="spec type" id="type-var_name" class="anchored">
+     <a href="#type-var_name" class="anchor"></a>
+     <code><span><span class="keyword">type</span> var_name</span>
+      <span> = string</span>
+     </code>
+    </div>
+   </div>
+   <div class="odoc-spec">
+    <div class="spec type" id="type-type_name" class="anchored">
+     <a href="#type-type_name" class="anchor"></a>
+     <code><span><span class="keyword">type</span> type_name</span>
+      <span> = string</span>
+     </code>
+    </div>
+   </div>
+   <div class="odoc-spec">
+    <div class="spec module" id="module-Atom" class="anchored">
+     <a href="#module-Atom" class="anchor"></a>
+     <code><span><span class="keyword">module</span> </span><span>Atom</span>
+      <span> = <span class="xref-unresolved">Sexplib0__Raw_grammar</span>
+       .Atom
+      </span>
+     </code>
+    </div>
+   </div>
+   <div class="odoc-spec">
+    <div class="spec type" id="type-type_" class="anchored">
+     <a href="#type-type_" class="anchor"></a>
+     <code>
+      <span><span class="keyword">type</span> <span>!'t type_</span></span>
+      <span> = 
+       <span><span class="type-var">'t</span> 
+        <span class="xref-unresolved">Sexplib0__Raw_grammar</span>.type_
+       </span>
+      </span><span> = </span>
+     </code>
+     <table>
+      <tr id="type-type_.Any" class="anchored">
+       <td class="def variant constructor">
+        <a href="#type-type_.Any" class="anchor"></a>
+        <code><span>| </span>
+         <span><span class="constructor">Any</span></span>
+        </code>
+       </td>
+      </tr>
+      <tr id="type-type_.Apply" class="anchored">
+       <td class="def variant constructor">
+        <a href="#type-type_.Apply" class="anchor"></a>
+        <code><span>| </span>
+         <span><span class="constructor">Apply</span> 
+          <span class="keyword">of</span> 
+          <span><span class="type-var">'t</span> 
+           <a href="#type-type_">type_</a>
+          </span> * 
+          <span>
+           <span><span class="type-var">'t</span> 
+            <a href="#type-type_">type_</a>
+           </span> list
+          </span>
+         </span>
+        </code>
+       </td>
+      </tr>
+      <tr id="type-type_.Atom" class="anchored">
+       <td class="def variant constructor">
+        <a href="#type-type_.Atom" class="anchor"></a>
+        <code><span>| </span>
+         <span><span class="constructor">Atom</span> 
+          <span class="keyword">of</span> 
+          <span class="xref-unresolved">Atom</span>.t
+         </span>
+        </code>
+       </td>
+      </tr>
+      <tr id="type-type_.Explicit_bind" class="anchored">
+       <td class="def variant constructor">
+        <a href="#type-type_.Explicit_bind" class="anchor"></a>
+        <code><span>| </span>
+         <span><span class="constructor">Explicit_bind</span> 
+          <span class="keyword">of</span> 
+          <span><a href="#type-var_name">var_name</a> list</span> * 
+          <span><span class="type-var">'t</span> 
+           <a href="#type-type_">type_</a>
+          </span>
+         </span>
+        </code>
+       </td>
+      </tr>
+      <tr id="type-type_.Explicit_var" class="anchored">
+       <td class="def variant constructor">
+        <a href="#type-type_.Explicit_var" class="anchor"></a>
+        <code><span>| </span>
+         <span><span class="constructor">Explicit_var</span> 
+          <span class="keyword">of</span> int
+         </span>
+        </code>
+       </td>
+      </tr>
+      <tr id="type-type_.Grammar" class="anchored">
+       <td class="def variant constructor">
+        <a href="#type-type_.Grammar" class="anchor"></a>
+        <code><span>| </span>
+         <span><span class="constructor">Grammar</span> 
+          <span class="keyword">of</span> <span class="type-var">'t</span>
+         </span>
+        </code>
+       </td>
+      </tr>
+      <tr id="type-type_.Implicit_var" class="anchored">
+       <td class="def variant constructor">
+        <a href="#type-type_.Implicit_var" class="anchor"></a>
+        <code><span>| </span>
+         <span><span class="constructor">Implicit_var</span> 
+          <span class="keyword">of</span> int
+         </span>
+        </code>
+       </td>
+      </tr>
+      <tr id="type-type_.List" class="anchored">
+       <td class="def variant constructor">
+        <a href="#type-type_.List" class="anchor"></a>
+        <code><span>| </span>
+         <span><span class="constructor">List</span> 
+          <span class="keyword">of</span> 
+          <span><span class="type-var">'t</span> 
+           <a href="#type-sequence_type">sequence_type</a>
+          </span>
+         </span>
+        </code>
+       </td>
+      </tr>
+      <tr id="type-type_.Option" class="anchored">
+       <td class="def variant constructor">
+        <a href="#type-type_.Option" class="anchor"></a>
+        <code><span>| </span>
+         <span><span class="constructor">Option</span> 
+          <span class="keyword">of</span> 
+          <span><span class="type-var">'t</span> 
+           <a href="#type-type_">type_</a>
+          </span>
+         </span>
+        </code>
+       </td>
+      </tr>
+      <tr id="type-type_.Record" class="anchored">
+       <td class="def variant constructor">
+        <a href="#type-type_.Record" class="anchor"></a>
+        <code><span>| </span>
+         <span><span class="constructor">Record</span> 
+          <span class="keyword">of</span> 
+          <span><span class="type-var">'t</span> 
+           <a href="#type-record_type">record_type</a>
+          </span>
+         </span>
+        </code>
+       </td>
+      </tr>
+      <tr id="type-type_.Recursive" class="anchored">
+       <td class="def variant constructor">
+        <a href="#type-type_.Recursive" class="anchor"></a>
+        <code><span>| </span>
+         <span><span class="constructor">Recursive</span> 
+          <span class="keyword">of</span> 
+          <a href="#type-type_name">type_name</a>
+         </span>
+        </code>
+       </td>
+      </tr>
+      <tr id="type-type_.Union" class="anchored">
+       <td class="def variant constructor">
+        <a href="#type-type_.Union" class="anchor"></a>
+        <code><span>| </span>
+         <span><span class="constructor">Union</span> 
+          <span class="keyword">of</span> 
+          <span>
+           <span><span class="type-var">'t</span> 
+            <a href="#type-type_">type_</a>
+           </span> list
+          </span>
+         </span>
+        </code>
+       </td>
+      </tr>
+      <tr id="type-type_.Variant" class="anchored">
+       <td class="def variant constructor">
+        <a href="#type-type_.Variant" class="anchor"></a>
+        <code><span>| </span>
+         <span><span class="constructor">Variant</span> 
+          <span class="keyword">of</span> 
+          <span><span class="type-var">'t</span> 
+           <a href="#type-variant_type">variant_type</a>
+          </span>
+         </span>
+        </code>
+       </td>
+      </tr>
+     </table>
+    </div>
+   </div>
+   <div class="odoc-spec">
+    <div class="spec type" id="type-sequence_type" class="anchored">
+     <a href="#type-sequence_type" class="anchor"></a>
+     <code>
+      <span><span class="keyword">and</span> <span>!'t sequence_type</span>
+      </span>
+      <span> = 
+       <span>
+        <span><span class="type-var">'t</span> 
+         <a href="#type-component">component</a>
+        </span> list
+       </span>
+      </span>
+     </code>
+    </div>
+   </div>
+   <div class="odoc-spec">
+    <div class="spec type" id="type-component" class="anchored">
+     <a href="#type-component" class="anchor"></a>
+     <code>
+      <span><span class="keyword">and</span> <span>!'t component</span>
+      </span>
+      <span> = 
+       <span><span class="type-var">'t</span> 
+        <span class="xref-unresolved">Sexplib0__Raw_grammar</span>.component
+       </span>
+      </span><span> = </span>
+     </code>
+     <table>
+      <tr id="type-component.One" class="anchored">
+       <td class="def variant constructor">
+        <a href="#type-component.One" class="anchor"></a>
+        <code><span>| </span>
+         <span><span class="constructor">One</span> 
+          <span class="keyword">of</span> 
+          <span><span class="type-var">'t</span> 
+           <a href="#type-type_">type_</a>
+          </span>
+         </span>
+        </code>
+       </td>
+      </tr>
+      <tr id="type-component.Optional" class="anchored">
+       <td class="def variant constructor">
+        <a href="#type-component.Optional" class="anchor"></a>
+        <code><span>| </span>
+         <span><span class="constructor">Optional</span> 
+          <span class="keyword">of</span> 
+          <span><span class="type-var">'t</span> 
+           <a href="#type-type_">type_</a>
+          </span>
+         </span>
+        </code>
+       </td>
+      </tr>
+      <tr id="type-component.Many" class="anchored">
+       <td class="def variant constructor">
+        <a href="#type-component.Many" class="anchor"></a>
+        <code><span>| </span>
+         <span><span class="constructor">Many</span> 
+          <span class="keyword">of</span> 
+          <span><span class="type-var">'t</span> 
+           <a href="#type-type_">type_</a>
+          </span>
+         </span>
+        </code>
+       </td>
+      </tr>
+      <tr id="type-component.Fields" class="anchored">
+       <td class="def variant constructor">
+        <a href="#type-component.Fields" class="anchor"></a>
+        <code><span>| </span>
+         <span><span class="constructor">Fields</span> 
+          <span class="keyword">of</span> 
+          <span><span class="type-var">'t</span> 
+           <a href="#type-record_type">record_type</a>
+          </span>
+         </span>
+        </code>
+       </td>
+      </tr>
+     </table>
+    </div>
+   </div>
+   <div class="odoc-spec">
+    <div class="spec type" id="type-variant_type" class="anchored">
+     <a href="#type-variant_type" class="anchor"></a>
+     <code>
+      <span><span class="keyword">and</span> <span>!'t variant_type</span>
+      </span>
+      <span> = 
+       <span><span class="type-var">'t</span> 
+        <span class="xref-unresolved">Sexplib0__Raw_grammar</span>
+        .variant_type
+       </span>
+      </span><span> = </span><span>{</span>
+     </code>
+     <table>
+      <tr id="type-variant_type.ignore_capitalization" class="anchored">
+       <td class="def record field">
+        <a href="#type-variant_type.ignore_capitalization" class="anchor">
+        </a><code><span>ignore_capitalization : bool;</span></code>
+       </td>
+      </tr>
+      <tr id="type-variant_type.alts" class="anchored">
+       <td class="def record field">
+        <a href="#type-variant_type.alts" class="anchor"></a>
+        <code>
+         <span>alts : 
+          <span>
+           <span>(<a href="#type-label">label</a> * 
+            <span><span class="type-var">'t</span> 
+             <a href="#type-sequence_type">sequence_type</a>
+            </span>)
+           </span> list
+          </span>;
+         </span>
+        </code>
+       </td>
+      </tr>
+     </table><code><span>}</span></code>
+    </div>
+   </div>
+   <div class="odoc-spec">
+    <div class="spec type" id="type-record_type" class="anchored">
+     <a href="#type-record_type" class="anchor"></a>
+     <code>
+      <span><span class="keyword">and</span> <span>!'t record_type</span>
+      </span>
+      <span> = 
+       <span><span class="type-var">'t</span> 
+        <span class="xref-unresolved">Sexplib0__Raw_grammar</span>
+        .record_type
+       </span>
+      </span><span> = </span><span>{</span>
+     </code>
+     <table>
+      <tr id="type-record_type.allow_extra_fields" class="anchored">
+       <td class="def record field">
+        <a href="#type-record_type.allow_extra_fields" class="anchor"></a>
+        <code><span>allow_extra_fields : bool;</span></code>
+       </td>
+      </tr>
+      <tr id="type-record_type.fields" class="anchored">
+       <td class="def record field">
+        <a href="#type-record_type.fields" class="anchor"></a>
+        <code>
+         <span>fields : 
+          <span>
+           <span>(<a href="#type-label">label</a> * 
+            <span><span class="type-var">'t</span> 
+             <a href="#type-field">field</a>
+            </span>)
+           </span> list
+          </span>;
+         </span>
+        </code>
+       </td>
+      </tr>
+     </table><code><span>}</span></code>
+    </div>
+   </div>
+   <div class="odoc-spec">
+    <div class="spec type" id="type-field" class="anchored">
+     <a href="#type-field" class="anchor"></a>
+     <code>
+      <span><span class="keyword">and</span> <span>!'t field</span></span>
+      <span> = 
+       <span><span class="type-var">'t</span> 
+        <span class="xref-unresolved">Sexplib0__Raw_grammar</span>.field
+       </span>
+      </span><span> = </span><span>{</span>
+     </code>
+     <table>
+      <tr id="type-field.optional" class="anchored">
+       <td class="def record field">
+        <a href="#type-field.optional" class="anchor"></a>
+        <code><span>optional : bool;</span></code>
+       </td>
+      </tr>
+      <tr id="type-field.args" class="anchored">
+       <td class="def record field">
+        <a href="#type-field.args" class="anchor"></a>
+        <code>
+         <span>args : 
+          <span><span class="type-var">'t</span> 
+           <a href="#type-sequence_type">sequence_type</a>
+          </span>;
+         </span>
+        </code>
+       </td>
+      </tr>
+     </table><code><span>}</span></code>
+    </div>
+   </div>
+   <div class="odoc-spec">
+    <div class="spec type" id="type-t" class="anchored">
+     <a href="#type-t" class="anchor"></a>
+     <code><span><span class="keyword">type</span> t</span>
+      <span> = <span class="xref-unresolved">Sexplib0__Raw_grammar</span>.t
+      </span><span> = </span>
+     </code>
+     <table>
+      <tr id="type-t.Ref" class="anchored">
+       <td class="def variant constructor">
+        <a href="#type-t.Ref" class="anchor"></a>
+        <code><span>| </span>
+         <span><span class="constructor">Ref</span> 
+          <span class="keyword">of</span> 
+          <a href="#type-type_name">type_name</a> * 
+          <a href="#type-group">group</a>
+         </span>
+        </code>
+       </td>
+      </tr>
+      <tr id="type-t.Inline" class="anchored">
+       <td class="def variant constructor">
+        <a href="#type-t.Inline" class="anchor"></a>
+        <code><span>| </span>
+         <span><span class="constructor">Inline</span> 
+          <span class="keyword">of</span> 
+          <span><a href="#type-t">t</a> <a href="#type-type_">type_</a>
+          </span>
+         </span>
+        </code>
+       </td>
+      </tr>
+     </table>
+    </div>
+   </div>
+   <div class="odoc-spec">
+    <div class="spec type" id="type-group" class="anchored">
+     <a href="#type-group" class="anchor"></a>
+     <code><span><span class="keyword">and</span> group</span>
+      <span> = <span class="xref-unresolved">Sexplib0__Raw_grammar</span>
+       .group
+      </span><span> = </span><span>{</span>
+     </code>
+     <table>
+      <tr id="type-group.gid" class="anchored">
+       <td class="def record field">
+        <a href="#type-group.gid" class="anchor"></a>
+        <code><span>gid : <a href="#type-group_id">group_id</a>;</span>
+        </code>
+       </td>
+      </tr>
+      <tr id="type-group.generic_group" class="anchored">
+       <td class="def record field">
+        <a href="#type-group.generic_group" class="anchor"></a>
+        <code>
+         <span>generic_group : 
+          <a href="#type-generic_group">generic_group</a>;
+         </span>
+        </code>
+       </td>
+      </tr>
+      <tr id="type-group.origin" class="anchored">
+       <td class="def record field">
+        <a href="#type-group.origin" class="anchor"></a>
+        <code><span>origin : string;</span></code>
+       </td>
+      </tr>
+      <tr id="type-group.apply_implicit" class="anchored">
+       <td class="def record field">
+        <a href="#type-group.apply_implicit" class="anchor"></a>
+        <code>
+         <span>apply_implicit : <span><a href="#type-t">t</a> list</span>;
+         </span>
+        </code>
+       </td>
+      </tr>
+     </table><code><span>}</span></code>
+    </div>
+   </div>
+   <div class="odoc-spec">
+    <div class="spec type" id="type-generic_group" class="anchored">
+     <a href="#type-generic_group" class="anchor"></a>
+     <code><span><span class="keyword">and</span> generic_group</span>
+      <span> = <span class="xref-unresolved">Sexplib0__Raw_grammar</span>
+       .generic_group
+      </span><span> = </span><span>{</span>
+     </code>
+     <table>
+      <tr id="type-generic_group.implicit_vars" class="anchored">
+       <td class="def record field">
+        <a href="#type-generic_group.implicit_vars" class="anchor"></a>
+        <code>
+         <span>implicit_vars : 
+          <span><a href="#type-var_name">var_name</a> list</span>;
+         </span>
+        </code>
+       </td>
+      </tr>
+      <tr id="type-generic_group.ggid" class="anchored">
+       <td class="def record field">
+        <a href="#type-generic_group.ggid" class="anchor"></a>
+        <code>
+         <span>ggid : <a href="#type-generic_group_id">generic_group_id</a>;
+         </span>
+        </code>
+       </td>
+      </tr>
+      <tr id="type-generic_group.types" class="anchored">
+       <td class="def record field">
+        <a href="#type-generic_group.types" class="anchor"></a>
+        <code>
+         <span>types : 
+          <span>
+           <span>(<a href="#type-type_name">type_name</a> * 
+            <span><a href="#type-t">t</a> <a href="#type-type_">type_</a>
+            </span>)
+           </span> list
+          </span>;
+         </span>
+        </code>
+       </td>
+      </tr>
+     </table><code><span>}</span></code>
+    </div>
+   </div>
+   <div class="odoc-spec">
+    <div class="spec module" id="module-Builtin" class="anchored">
+     <a href="#module-Builtin" class="anchor"></a>
+     <code><span><span class="keyword">module</span> </span>
+      <span><a href="Builtin/index.html">Builtin</a></span>
+      <span> : <span class="keyword">sig</span> ... 
+       <span class="keyword">end</span>
+      </span>
+     </code>
+    </div>
+   </div>
+   <div class="odoc-spec">
+    <div class="spec value" id="val-empty_sexp_grammar" class="anchored">
+     <a href="#val-empty_sexp_grammar" class="anchor"></a>
+     <code>
+      <span><span class="keyword">val</span> empty_sexp_grammar : 
+       <a href="#type-t">t</a>
+      </span>
+     </code>
+    </div>
+   </div>
+   <div class="odoc-spec">
+    <div class="spec value" id="val-opaque_sexp_grammar" class="anchored">
+     <a href="#val-opaque_sexp_grammar" class="anchor"></a>
+     <code>
+      <span><span class="keyword">val</span> opaque_sexp_grammar : 
+       <a href="#type-t">t</a>
+      </span>
+     </code>
+    </div>
+   </div>
+   <div class="odoc-spec">
+    <div class="spec value" id="val-fun_sexp_grammar" class="anchored">
+     <a href="#val-fun_sexp_grammar" class="anchor"></a>
+     <code>
+      <span><span class="keyword">val</span> fun_sexp_grammar : 
+       <a href="#type-t">t</a>
+      </span>
+     </code>
+    </div>
+   </div>
+   <div class="odoc-spec">
+    <div class="spec value" id="val-tuple2_sexp_grammar" class="anchored">
+     <a href="#val-tuple2_sexp_grammar" class="anchor"></a>
+     <code>
+      <span><span class="keyword">val</span> tuple2_sexp_grammar : 
+       <a href="#type-t">t</a>
+      </span>
+     </code>
+    </div>
+   </div>
+  </div>
+ </body>
+</html>
