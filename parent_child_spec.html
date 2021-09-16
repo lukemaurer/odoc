@@ -12,16 +12,16 @@ I also own page {{!page-foo}foo}</code></pre><p><code>mark.mld</code></p><pre><c
 
 I'm Mark {{!page-doe}Doe}'s and I have no child.</code></pre><p><code>max.mld</code></p><pre><code>{0 About Max}
 
-I'm Max, the child to {{!page-doe}Doe}</code></pre><p><code>foo.ml</code></p><pre><code>(** I'm foo, a page child to Doe*)</code></pre><h2 id="compilation"><a href="#compilation" class="anchor"></a>compilation</h2><pre><code>$ ocamlc -c -bin-annot foo.ml
+I'm Max, the child to {{!page-doe}Doe}</code></pre><p><code>foo.ml</code></p><pre><code>(** I'm foo, a page child to Doe*)</code></pre></header><nav class="odoc-toc"><ul><li><a href="#compilation">compilation</a></li><li><a href="#linking">linking</a></li><li><a href="#generate-html">generate html</a></li></ul></nav><div class="odoc-content"><h3 id="compilation"><a href="#compilation" class="anchor"></a>compilation</h3><pre><code>$ ocamlc -c -bin-annot foo.ml
 &amp;&amp; odoc compile john.mld -c page-doe -c page-mark
 &amp;&amp; odoc compile doe.mld -I . --parent page-john -c page-max -c foo
 &amp;&amp; odoc compile max.mld -I . --parent page-doe
 &amp;&amp; odoc compile foo.cmt -I . --parent page-doe
-&amp;&amp; odoc compile mark.mld -I . --parent page-john</code></pre><p>The output of the compilation phase will be <code>odoc</code> files, where each of them will be linked by invoking <code>odoc link</code> command on them.</p><h2 id="linking"><a href="#linking" class="anchor"></a>linking</h2><p><code>odoc link -I . &lt;file&gt;.odoc</code></p><pre><code>$ odoc link -I . page-john.odoc
+&amp;&amp; odoc compile mark.mld -I . --parent page-john</code></pre><p>The output of the compilation phase will be <code>odoc</code> files, where each of them will be linked by invoking <code>odoc link</code> command on them.</p><h3 id="linking"><a href="#linking" class="anchor"></a>linking</h3><p><code>odoc link -I . &lt;file&gt;.odoc</code></p><pre><code>$ odoc link -I . page-john.odoc
 &amp;&amp; odoc link -I . page-doe.odoc
 &amp;&amp; odoc link -I . page-mark.odoc
 &amp;&amp; odoc link -I . page-max.odoc
-&amp;&amp; odoc link -I . foo.odoc</code></pre><p>The output of the <code>odoc link</code> command is an <code>odocl</code> file, by default, in the same path as the original <code>odoc</code> file.</p><h2 id="generate-html"><a href="#generate-html" class="anchor"></a>generate html</h2><pre><code>$ odoc html-generate --indent -o html page-john.odocl
+&amp;&amp; odoc link -I . foo.odoc</code></pre><p>The output of the <code>odoc link</code> command is an <code>odocl</code> file, by default, in the same path as the original <code>odoc</code> file.</p><h3 id="generate-html"><a href="#generate-html" class="anchor"></a>generate html</h3><pre><code>$ odoc html-generate --indent -o html page-john.odocl
 &amp;&amp; odoc html-generate --indent -o html page-doe.odocl
 &amp;&amp; odoc html-generate --indent -o html page-mark.odocl
 &amp;&amp; odoc html-generate --indent -o html page-max.odocl
@@ -43,4 +43,4 @@ max.html
 html/john/doe/Foo:
 index.</code></pre><p><b>Note:</b> We generated html files only for this example, but it's very possible to generate files in other formats, i.e latex and man-pages; using:</p><ul><li><code>$ odoc latex-generate -o latex &lt;file&gt;.odocl</code></li><li><code>$ odoc man-generate -o man &lt;file&gt;.odocl</code></li></ul><p>There are of course other commands that <code>odoc</code> uses for other purposes; for example, for inspection;</p><ul><li><code>odoc &lt;html/latex/man&gt;-targets ...</code> to take a glimpse of the expected targets</li><li><code>odoc compile-deps ...</code> which lists units \(with their digest\) which need to be compiled in order to compile current compilation unit. The unit itself and its digest is also reported in the output.</li></ul><p>For example, inspecting the dependencies required to compile <code>foo.cmt</code>, we run</p><p><code>odoc compile-deps foo.cmt</code></p><p>and we shall get</p><pre><code>Stdlib aea3513d44d604b62eaff79ad12007b3
 Foo 5ab79b5411a3c3476029260eda0b4a26
-CamlinternalFormatBasics f562e7b79dbe1bb1591060d6b4e854cf</code></pre><p>For more about <code>odoc</code> commands, simply invoke <code>odoc --help</code> in your shell.</p></header><div class="odoc-content"></div></body></html>
+CamlinternalFormatBasics f562e7b79dbe1bb1591060d6b4e854cf</code></pre><p>For more about <code>odoc</code> commands, simply invoke <code>odoc --help</code> in your shell.</p></div></body></html>
