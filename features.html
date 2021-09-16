@@ -42,7 +42,17 @@ end</code></pre><p>The <a href="odoc_examples/Odoc_examples/Expansion/Include/A/
     (** @inline *)
 
     val g : t -&gt; t
-end</code></pre><p>The <a href="odoc_examples/Odoc_examples/Expansion/Include/B/index.html">expansion of module <code>B</code></a> does not contain an indication that the elements <code>t</code> and <code>f</code> came from an <code>include</code> directive.</p><h3 id="shadowing"><a href="#shadowing" class="anchor"></a>Shadowing</h3><p>OCaml ordinarily does not allow two items of the same type with the same name. For example, the following is illegal:</p><p>```ocaml type t = int type t = string ```</p><p>However, if the item comes in via an include, then OCaml allows it. For example,</p><p>```ocaml module type A = sig type t = int val f : t end</p><p>module type B = sig include A type t = string val g : t end ```</p><p>Since odoc is required to do its own expansions, it must take account of this behaviour. The previous example is rendered <a href="odoc_examples/Odoc_examples/Expansion/Shadowing/index.html">here</a>.</p><h3 id="deep-equations"><a href="#deep-equations" class="anchor"></a>Deep equations</h3><p>The module type system allows for adding equations to abstract types (as seen above in the <code>StringSet</code> declaration). These equations may be 'deep' in the sense that they operate on a nested module rather than the outer one. For example,</p><pre><code>module type SIG = sig
+end</code></pre><p>The <a href="odoc_examples/Odoc_examples/Expansion/Include/B/index.html">expansion of module <code>B</code></a> does not contain an indication that the elements <code>t</code> and <code>f</code> came from an <code>include</code> directive.</p><h3 id="shadowing"><a href="#shadowing" class="anchor"></a>Shadowing</h3><p>OCaml ordinarily does not allow two items of the same type with the same name. For example, the following is illegal:</p><pre><code>type t = int
+type t = string</code></pre><p>However, if the item comes in via an include, then OCaml allows it. For example,</p><pre><code>module type A = sig
+  type t = int
+  val f : t
+end
+
+module type B = sig
+  include A
+  type t = string
+  val g : t
+end</code></pre><p>Since odoc is required to do its own expansions, it must take account of this behaviour. The previous example is rendered <a href="odoc_examples/Odoc_examples/Expansion/Shadowing/index.html">here</a>.</p><h3 id="deep-equations"><a href="#deep-equations" class="anchor"></a>Deep equations</h3><p>The module type system allows for adding equations to abstract types (as seen above in the <code>StringSet</code> declaration). These equations may be 'deep' in the sense that they operate on a nested module rather than the outer one. For example,</p><pre><code>module type SIG = sig
   type t
 end
 
