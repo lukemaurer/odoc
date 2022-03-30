@@ -68,7 +68,14 @@ module Name : Name = struct
 
   let equal (x : t) (y : t) = x = y
 
-  let compare = compare
+  let compare (x : t) (y : t) =
+    match (x, y) with
+    | _, _ when x == y -> 0
+    | Std s1, Std s2 -> String.compare s1 s2
+    | Internal (s1, i1), Internal (s2, i2) -> (
+        match String.compare s1 s2 with 0 -> Int.compare i1 i2 | c -> c)
+    | Internal _, Std _ -> -1
+    | Std _, Internal _ -> 1
 
   let fmt ppf x = Format.fprintf ppf "%s" (to_string x)
 

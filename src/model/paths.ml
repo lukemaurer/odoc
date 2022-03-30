@@ -74,7 +74,101 @@ module Identifier = struct
 
   let hash = Hashtbl.hash
 
-  let compare = compare
+  let tag_aux (n : t) =
+    match n with
+    | `Root _ -> 0
+    | `Page _ -> 1
+    | `LeafPage _ -> 2
+    | `Module _ -> 3
+    | `Parameter _ -> 4
+    | `Result _ -> 5
+    | `ModuleType _ -> 6
+    | `Type _ -> 7
+    | `CoreType _ -> 8
+    | `Constructor _ -> 9
+    | `Field _ -> 10
+    | `Extension _ -> 11
+    | `Exception _ -> 12
+    | `CoreException _ -> 13
+    | `Value _ -> 14
+    | `Class _ -> 15
+    | `ClassType _ -> 16
+    | `Method _ -> 17
+    | `InstanceVariable _ -> 18
+    | `Label _ -> 19
+
+  let tag (n : [< t ]) = tag_aux (n :> t)
+
+  let compare_lex fa fb (a1, b1) (a2, b2) =
+    match fa a1 a2 with 0 -> fb b1 b2 | c -> c
+
+  let rec compare_aux (n1 : t) (n2 : t) =
+    match (n1, n2) with
+    | _, _ when n1 == n2 -> 0
+    | `Root (p1, n1), `Root (p2, n2) ->
+        compare_lex
+          (Option.compare compare_container_page)
+          ModuleName.compare (p1, n1) (p2, n2)
+    | `Page (p1, n1), `Page (p2, n2) ->
+        compare_lex
+          (Option.compare compare_container_page)
+          PageName.compare (p1, n1) (p2, n2)
+    | `LeafPage (p1, n1), `LeafPage (p2, n2) ->
+        compare_lex
+          (Option.compare compare_container_page)
+          PageName.compare (p1, n1) (p2, n2)
+    | `Module (s1, n1), `Module (s2, n2) ->
+        compare_lex compare_signature ModuleName.compare (s1, n1) (s2, n2)
+    | `Parameter (s1, n1), `Parameter (s2, n2) ->
+        compare_lex compare_signature ParameterName.compare (s1, n1) (s2, n2)
+    | `Result s1, `Result s2 -> compare_signature s1 s2
+    | `ModuleType (s1, n1), `ModuleType (s2, n2) ->
+        compare_lex compare_signature ModuleTypeName.compare (s1, n1) (s2, n2)
+    | `Type (s1, n1), `Type (s2, n2) ->
+        compare_lex compare_signature TypeName.compare (s1, n1) (s2, n2)
+    | `CoreType n1, `CoreType n2 -> TypeName.compare n1 n2
+    | `Constructor (t1, n1), `Constructor (t2, n2) ->
+        compare_lex compare_type ConstructorName.compare (t1, n1) (t2, n2)
+    | `Field (p1, n1), `Field (p2, n2) ->
+        compare_lex compare_parent FieldName.compare (p1, n1) (p2, n2)
+    | `Extension (s1, n1), `Extension (s2, n2) ->
+        compare_lex compare_signature ExtensionName.compare (s1, n1) (s2, n2)
+    | `Exception (s1, n1), `Exception (s2, n2) ->
+        compare_lex compare_signature ExceptionName.compare (s1, n1) (s2, n2)
+    | `CoreException n1, `CoreException n2 -> ExceptionName.compare n1 n2
+    | `Value (s1, n1), `Value (s2, n2) ->
+        compare_lex compare_signature ValueName.compare (s1, n1) (s2, n2)
+    | `Class (s1, n1), `Class (s2, n2) ->
+        compare_lex compare_signature ClassName.compare (s1, n1) (s2, n2)
+    | `ClassType (s1, n1), `ClassType (s2, n2) ->
+        compare_lex compare_signature ClassTypeName.compare (s1, n1) (s2, n2)
+    | `Method (s1, n1), `Method (s2, n2) ->
+        compare_lex compare_class_signature MethodName.compare (s1, n1) (s2, n2)
+    | `InstanceVariable (s1, n1), `InstanceVariable (s2, n2) ->
+        compare_lex compare_class_signature InstanceVariableName.compare
+          (s1, n1) (s2, n2)
+    | `Label (p1, n1), `Label (p2, n2) ->
+        compare_lex compare_label_parent LabelName.compare (p1, n1) (p2, n2)
+    | ( ( `Root _ | `Page _ | `LeafPage _ | `Module _ | `Parameter _ | `Result _
+        | `ModuleType _ | `Type _ | `CoreType _ | `Constructor _ | `Field _
+        | `Extension _ | `Exception _ | `CoreException _ | `Value _ | `Class _
+        | `ClassType _ | `Method _ | `InstanceVariable _ | `Label _ ),
+        _ ) ->
+        Int.compare (tag n1) (tag n2)
+
+  and compare_container_page p1 p2 = compare_aux (p1 :> t) (p2 :> t)
+
+  and compare_signature s1 s2 = compare_aux (s1 :> t) (s2 :> t)
+
+  and compare_type t1 t2 = compare_aux (t1 :> t) (t2 :> t)
+
+  and compare_parent p1 p2 = compare_aux (p1 :> t) (p2 :> t)
+
+  and compare_class_signature s1 s2 = compare_aux (s1 :> t) (s2 :> t)
+
+  and compare_label_parent p1 p2 = compare_aux (p1 :> t) (p2 :> t)
+
+  let compare (n1 : [< t ]) (n2 : [< t ]) = compare_aux (n1 :> t) (n2 :> t)
 
   type any = t
 
