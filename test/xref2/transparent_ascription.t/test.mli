@@ -100,8 +100,32 @@ module Nested : sig
   module Q2 : S with module O.M := Int
 end
 
-(* Same when the [module type of] goes through an alias, though oddly [P.t] ends
-   up strengthened to [type t = M.t] since that's the module type of [M']. *)
+(* Things get trickier when we need to project out of a module type with
+   interdependencies. *)
+
+module Nested_dependent : sig
+  module type S = sig
+    module O : sig
+      module M : T
+
+      module L : sig
+        type t = M.t
+      end
+    end
+
+    module N3I : sig
+      include module type of O.L
+    end
+  end
+
+  module P2 : S with module O.M = Int
+
+  module Q2 : S with module O.M := Int
+end
+
+(* Everything should work even when [module type of] goes through an alias,
+   though oddly [P.t] ends up strengthened to [type t = M.t] since that's the
+   module type of [M']. *)
 
 module Via_alias : sig
   module type S = sig

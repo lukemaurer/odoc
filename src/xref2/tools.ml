@@ -1736,6 +1736,11 @@ and project_from_expansion :
   | `Here -> Ok exp
   | `Dot (proj, id) ->
       project_from_expansion ~mark_substituted env proj exp >>= fun exp ->
+      (* FIXME NO. BAD. Something needs to happen here akin to the [`Dot] case
+         of [resolve_module], since you can't just project out of a signature
+         without applying a prefix substitution. Only trouble is, you can't
+         produce one of those without the path to the parent, so that path needs
+         to make its way here somehow. *)
       find_in_expansion env exp id
   | `Module (proj, id) ->
       project_from_expansion ~mark_substituted env proj exp >>= fun exp ->
