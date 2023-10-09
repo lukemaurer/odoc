@@ -556,9 +556,8 @@ and module_decl : Env.t -> Id.Signature.t -> Module.decl -> Module.decl =
   | Alias (p, e) ->
       Alias (module_path env p, Opt.map (simple_expansion env id) e)
 
-and include_decl : Env.t -> Id.Signature.t -> Include.decl -> Include.decl =
+and include_decl : Env.t -> Id.Signature.t -> Module.U.decl -> Module.U.decl =
  fun env id decl ->
-  let open Include in
   match decl with
   | ModuleType expr -> ModuleType (u_module_type_expr env id expr)
   | Alias p -> Alias (module_path env p)
@@ -594,7 +593,8 @@ and module_type_substitution :
 and include_ : Env.t -> Include.t -> Include.t =
  fun env i ->
   let open Include in
-  let decl = include_decl env i.parent i.decl in
+  let i_decl, expansion = split_include_decl i.decl in
+  let decl = include_decl env i.parent i_decl in
   let doc = comment_docs env i.parent i.doc in
   let expansion =
     (* Don't call {!signature} to avoid adding the content of the expansion to
@@ -605,14 +605,14 @@ and include_ : Env.t -> Include.t -> Include.t =
       Lookup_failures.with_context
         "While resolving the expansion of include at %a" Location_.pp_span_start
         i.loc (fun () ->
-          let { content; _ } = i.expansion in
+          let content = expansion in
           let items = signature_items env i.parent content.items
           and doc = comment_docs env i.parent content.doc in
           { content with items; doc })
     in
-    { i.expansion with content }
+    content
   in
-  { i with decl; expansion; doc }
+  { i with decl = unsplit_include_decl decl expansion; doc }
 
 and functor_parameter_parameter :
     Env.t -> FunctorParameter.parameter -> FunctorParameter.parameter =

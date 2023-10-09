@@ -61,6 +61,10 @@ end
 *)
 
 module rec Module : sig
+  module U : sig
+    type decl = Alias of Cpath.module_ | ModuleType of ModuleType.U.expr
+  end
+
   type decl =
     | Alias of Cpath.module_ * ModuleType.simple_expansion option
     | ModuleType of ModuleType.expr
@@ -308,7 +312,7 @@ and Open : sig
 end
 
 and Include : sig
-  type decl = Alias of Cpath.module_ | ModuleType of ModuleType.U.expr
+  type decl = Module.decl (* Must be expanded and not a functor *)
 
   type t = {
     parent : Odoc_model.Paths.Identifier.Signature.t;
@@ -316,7 +320,7 @@ and Include : sig
     doc : CComment.docs;
     status : [ `Default | `Inline | `Closed | `Open ];
     shadowed : Odoc_model.Lang.Include.shadowed;
-    expansion_ : Signature.t;
+    expansion_ : CComment.docs;
     decl : decl;
     loc : Odoc_model.Location_.span;
   }
@@ -522,7 +526,7 @@ module Fmt : sig
 
   val module_decl : Format.formatter -> Module.decl -> unit
 
-  val include_decl : Format.formatter -> Include.decl -> unit
+  val include_decl : Format.formatter -> Module.U.decl -> unit
 
   val module_ : Format.formatter -> Module.t -> unit
 
@@ -723,7 +727,7 @@ module Of_Lang : sig
 
   val module_decl : map -> Odoc_model.Lang.Module.decl -> Module.decl
 
-  val include_decl : map -> Odoc_model.Lang.Include.decl -> Include.decl
+  val include_decl : map -> Odoc_model.Lang.Module.U.decl -> Module.U.decl
 
   val module_ : map -> Odoc_model.Lang.Module.t -> Module.t
 
@@ -797,3 +801,11 @@ end
 val module_of_functor_argument : FunctorParameter.parameter -> Module.t
 
 val extract_signature_doc : Signature.t -> CComment.docs
+
+val signature_of_include : Include.t -> Signature.t
+
+val set_signature_of_include : Include.t -> Signature.t -> Include.t
+
+val split_include_decl : Include.decl -> Module.U.decl * Signature.t
+
+val unsplit_include_decl : Module.U.decl -> Signature.t -> Include.decl

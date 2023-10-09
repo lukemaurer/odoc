@@ -760,9 +760,8 @@ and module_decl s t =
   | ModuleType t -> ModuleType (module_type_expr s t)
 
 and include_decl s t =
-  match t with
-  | Include.Alias p -> Include.Alias (module_path s p)
-  | ModuleType t -> ModuleType (u_module_type_expr s t)
+  (* Preserves the invariant that the decl is expanded and not a functor *)
+  module_decl s t
 
 and module_ s t =
   let open Component.Module in
@@ -824,7 +823,6 @@ and include_ s i =
     i with
     decl = include_decl s i.decl;
     strengthened = option_ module_path s i.strengthened;
-    expansion_ = apply_sig_map_sg s i.expansion_;
   }
 
 and open_ s o =
@@ -1002,10 +1000,12 @@ and rename_bound_idents s sg =
            s)
         (ClassType (id', r, c) :: sg)
         rest
-  | Include ({ expansion_; _ } as i) :: rest ->
+  | Include i :: rest ->
+      let expansion_ = signature_of_include i in
       let s, items = rename_bound_idents s [] expansion_.items in
       rename_bound_idents s
-        (Include { i with expansion_ = { expansion_ with items; removed = [] } }
+        (Include
+           (set_signature_of_include i { expansion_ with items; removed = [] })
         :: sg)
         rest
   | Open { expansion; doc } :: rest ->

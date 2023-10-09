@@ -166,7 +166,8 @@ let prefix_substitution path sg =
              (`ClassType (path, name))
              sub')
           rest
-    | Include i :: rest -> get_sub (get_sub sub' i.expansion_.items) rest
+    | Include i :: rest ->
+        get_sub (get_sub sub' (Component.signature_of_include i).items) rest
     | Open o :: rest -> get_sub (get_sub sub' o.expansion.items) rest
   in
   let extend_sub_removed removed sub =
@@ -1760,15 +1761,18 @@ and fragmap :
                   w_expr = umty_of_mty mty';
                 }))
   in
-  let map_include_decl decl subst =
-    let open Component.Include in
+  let map_include_decl decl subst new_sg =
+    let open Component.Module in
     match decl with
-    | Alias p ->
-        expansion_of_module_path env ~strengthen:true p >>= assert_not_functor
-        >>= fun sg ->
-        fragmap ~mark_substituted env subst sg >>= fun sg ->
-        Ok (ModuleType (Signature sg))
-    | ModuleType mty' -> Ok (ModuleType (With ([ subst ], mty')))
+    | Alias _ -> ModuleType (Signature new_sg)
+    | ModuleType mty' ->
+        ModuleType
+          (With
+             {
+               w_substitutions = [ subst ];
+               w_expr = umty_of_mty mty';
+               w_expansion = Some (Signature new_sg);
+             })
   in
   let map_module m new_subst =
     let open Component.Module in
@@ -1814,12 +1818,12 @@ and fragmap :
                     true,
                     subbed_modules,
                     Component.Signature.RModule (id, y) :: removed ))
-        | Component.Signature.Include ({ expansion_; _ } as i), _ ->
+        | Component.Signature.Include i, _ ->
+            let expansion_ = Component.signature_of_include i in
             map_signature map expansion_.items
             >>= fun (items', handled', subbed_modules', removed') ->
             let component =
               if handled' then
-                map_include_decl i.decl sub >>= fun decl ->
                 let expansion_ =
                   Component.Signature.
                     {
@@ -1829,9 +1833,11 @@ and fragmap :
                       compiled = false;
                     }
                 in
+                let decl = map_include_decl i.decl sub expansion_ in
+
                 Ok
                   (Component.Signature.Include
-                     { i with decl; expansion_; strengthened = None })
+                     { i with decl; strengthened = None })
               else Ok item
             in
             component >>= fun c ->

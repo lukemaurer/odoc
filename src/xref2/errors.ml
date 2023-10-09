@@ -262,7 +262,7 @@ let kind_of_error ~what = function
   | Some e -> kind_of_error (e :> Tools_error.any)
   | None -> (
       match what with
-      | `Include (Component.Include.Alias cp) -> kind_of_module_cpath cp
+      | `Include (Component.Module.U.Alias cp) -> kind_of_module_cpath cp
       | `Module { Odoc_model.Paths.Identifier.iv = `Root (_, name); _ } ->
           Some (`Root (Names.ModuleName.to_string name))
       | _ -> None)
@@ -279,7 +279,7 @@ type what =
   | `Module_path of Cpath.module_
   | `Module_type_path of Cpath.module_type
   | `Module_type_U of Component.ModuleType.U.expr
-  | `Include of Component.Include.decl
+  | `Include of Component.Module.U.decl
   | `Package of Cpath.module_type
   | `Type of Cfrag.type_
   | `Type_path of Cpath.type_

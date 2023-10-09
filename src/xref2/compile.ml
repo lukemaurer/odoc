@@ -351,9 +351,9 @@ and module_decl : Env.t -> Id.Signature.t -> Module.decl -> Module.decl =
   | ModuleType expr -> ModuleType (module_type_expr env id expr)
   | Alias (p, expn) -> Alias (module_path env p, expn)
 
-and include_decl : Env.t -> Id.Signature.t -> Include.decl -> Include.decl =
+and include_decl : Env.t -> Id.Signature.t -> Module.U.decl -> Module.U.decl =
  fun env id decl ->
-  let open Include in
+  let open Module.U in
   match decl with
   | ModuleType expr -> ModuleType (u_module_type_expr env id expr)
   | Alias p -> Alias (module_path env p)
@@ -372,7 +372,8 @@ and module_type : Env.t -> ModuleType.t -> ModuleType.t =
 and include_ : Env.t -> Include.t -> Include.t * Env.t =
  fun env i ->
   let open Include in
-  let decl = Component.Of_Lang.(include_decl (empty ()) i.decl) in
+  let i_decl, old_expansion = split_include_decl i.decl in
+  let decl = Component.Of_Lang.(include_decl (empty ()) i_decl) in
   let get_expansion () =
     match
       let open Utils.ResultMonad in
@@ -385,7 +386,7 @@ and include_ : Env.t -> Include.t -> Include.t * Env.t =
     with
     | Error e ->
         Errors.report ~what:(`Include decl) ~tools_error:e `Expand;
-        i.expansion
+        old_expansion
     | Ok sg ->
         let map = Lang_of.with_shadowed i.expansion.shadowed in
         let sg' =
@@ -403,17 +404,13 @@ and include_ : Env.t -> Include.t -> Include.t * Env.t =
           | _ ->
               failwith "Expansion shouldn't be anything other than a signature"
         in
-        { i.expansion with content = expansion_sg }
+        expansion_sg
   in
   let expansion = get_expansion () in
-  let items, env' = signature_items env i.parent expansion.content.items in
-  let expansion =
-    {
-      expansion with
-      content = { expansion.content with items; compiled = true };
-    }
-  in
-  ({ i with decl = include_decl env i.parent i.decl; expansion }, env')
+  let items, env' = signature_items env i.parent expansion.items in
+  let expansion = { expansion with items; compiled = true } in
+  let decl = include_decl env i.parent i_decl in
+  ({ i with decl = unsplit_include_decl decl expansion }, env')
 
 and simple_expansion :
     Env.t ->

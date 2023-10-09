@@ -295,8 +295,8 @@ module LangUtils = struct
                 open Lang.Include
 
                 let expansion_sig : (t, Lang.Signature.t) lens =
-                    let get x = x.expansion.content in
-                    let set x i = {i with expansion = {i.expansion with content=x}} in
+                    let get x = Lang.signature_of_include x in
+                    let set x i = Lang.set_signature_of_include i x in
                     {get; set}
             end
 

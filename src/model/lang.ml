@@ -30,6 +30,10 @@ module Source_info = struct
 end
 
 module rec Module : sig
+  module U : sig
+    type decl = Alias of Path.Module.t | ModuleType of ModuleType.U.expr
+  end
+
   type decl =
     | Alias of (Path.Module.t * ModuleType.simple_expansion option)
     | ModuleType of ModuleType.expr
@@ -178,6 +182,8 @@ end =
 (** {3 Includes} *)
 
 and Include : sig
+  type decl = Module.decl (* Must be expanded and not a functor *)
+
   type shadowed = {
     s_modules : string list;
     s_module_types : string list;
@@ -187,10 +193,7 @@ and Include : sig
     s_class_types : string list;
   }
 
-  type expansion = { shadowed : shadowed; content : Signature.t }
-
-  (* Explicitly unexpanded decl *)
-  type decl = Alias of Path.Module.t | ModuleType of ModuleType.U.expr
+  type expansion = { shadowed : shadowed; doc : Comment.docs }
 
   type t = {
     loc : Location_.span;
@@ -536,5 +539,51 @@ let extract_signature_doc (s : Signature.t) =
       (* A signature that starts with an [@inline] include inherits the
          top-comment from the expansion. This comment is not rendered for
          [include] items. *)
-      expansion.content.doc
+      expansion.doc
   | doc, _ -> doc
+
+let signature_of_include (i : Include.t) =
+  match i.decl with
+  | Alias (_, Some (Signature s)) -> s
+  | ModuleType (Path { p_expansion = Some (Signature s); _ }) -> s
+  | ModuleType (Signature s) -> s
+  | ModuleType (With { w_expansion = Some (Signature s); _ }) -> s
+  | ModuleType (TypeOf { t_expansion = Some (Signature s); _ }) -> s
+  | _ -> assert false
+
+let set_signature_of_include (i : Include.t) s =
+  let exp : ModuleType.simple_expansion option = Some (Signature s) in
+  let decl : Module.decl =
+    match i.decl with
+    | Alias (p, _) -> Alias (p, exp)
+    | ModuleType (Path p) -> ModuleType (Path { p with p_expansion = exp })
+    | ModuleType (Signature _) -> ModuleType (Signature s)
+    | ModuleType (With w) -> ModuleType (With { w with w_expansion = exp })
+    | ModuleType (TypeOf t) -> ModuleType (TypeOf { t with t_expansion = exp })
+    | ModuleType (Functor _) -> assert false
+  in
+  { i with decl }
+
+let split_include_decl (d : Include.decl) : Module.U.decl * Signature.t =
+  match d with
+  | Alias (p, Some (Signature s)) -> (Alias p, s)
+  | ModuleType (Path { p_path; p_expansion = Some (Signature s) }) ->
+      (ModuleType (Path p_path), s)
+  | ModuleType (Signature s) -> (ModuleType (Signature s), s)
+  | ModuleType
+      (With { w_expr; w_substitutions; w_expansion = Some (Signature s) }) ->
+      (ModuleType (With (w_substitutions, w_expr)), s)
+  | ModuleType (TypeOf ({ t_desc = _; t_expansion = Some (Signature s) } as t))
+    ->
+      (ModuleType (TypeOf t), s)
+  | _ -> assert false
+
+let unsplit_include_decl (d : Module.U.decl) (s : Signature.t) : Include.decl =
+  let exp : ModuleType.simple_expansion option = Some (Signature s) in
+  match d with
+  | Alias p -> Alias (p, exp)
+  | ModuleType (Path p_path) -> ModuleType (Path { p_path; p_expansion = exp })
+  | ModuleType (Signature _) -> ModuleType (Signature s)
+  | ModuleType (With (w_substitutions, w_expr)) ->
+      ModuleType (With { w_substitutions; w_expr; w_expansion = exp })
+  | ModuleType (TypeOf t) -> ModuleType (TypeOf { t with t_expansion = exp })

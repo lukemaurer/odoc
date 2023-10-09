@@ -116,5 +116,6 @@ and type_decl : Cpath.type_ -> TypeDecl.t -> TypeDecl.t =
 
 and include_ : Cpath.module_ -> Include.t -> Include.t * Ident.module_ list =
  fun path i ->
-  let expansion_, strengthened = sig_items path i.expansion_ in
-  ({ i with expansion_; strengthened = Some path }, strengthened)
+  let expansion_, strengthened = sig_items path (signature_of_include i) in
+  ( set_signature_of_include { i with strengthened = Some path } expansion_,
+    strengthened )

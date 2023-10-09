@@ -147,22 +147,9 @@ and simple_expansion :
   | Functor (Unit, sg) -> Functor (Unit, simple_expansion env sg)
 
 and include_ env i =
-  let decl =
-    match i.decl with
-    | Alias _ -> i.decl
-    | ModuleType t -> ModuleType (u_module_type_expr env i.parent t)
-  in
-  let items, env' =
-    let { Include.content; _ } = i.expansion in
-    signature_items env content.items
-  in
-  ( {
-      i with
-      expansion =
-        { i.expansion with content = { i.expansion.content with items } };
-      decl;
-    },
-    env' )
+  let content = signature_of_include i in
+  let items, env' = signature_items env content.items in
+  (set_signature_of_include i { content with items }, env')
 
 let signature env =
   let rec loop sg =
