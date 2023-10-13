@@ -1553,26 +1553,13 @@ module Fmt = struct
 end
 
 let signature_of_include (i : Include.t) =
-  match i.decl.module_decl with
-  | Alias (_, Some (Signature s)) -> s
-  | ModuleType (Path { p_expansion = Some (Signature s); _ }) -> s
-  | ModuleType (Signature s) -> s
-  | ModuleType (With { w_expansion = Some (Signature s); _ }) -> s
-  | ModuleType (TypeOf { t_expansion = Some (Signature s); _ }) -> s
-  | _ -> assert false
+  let _decl, sg = split_include_decl i.decl in
+  sg
 
 let set_signature_of_include (i : Include.t) s =
-  let exp : ModuleType.simple_expansion option = Some (Signature s) in
-  let module_decl : Module.decl =
-    match i.decl.module_decl with
-    | Alias (p, _) -> Alias (p, exp)
-    | ModuleType (Path p) -> ModuleType (Path { p with p_expansion = exp })
-    | ModuleType (Signature _) -> ModuleType (Signature s)
-    | ModuleType (With w) -> ModuleType (With { w with w_expansion = exp })
-    | ModuleType (TypeOf t) -> ModuleType (TypeOf { t with t_expansion = exp })
-    | ModuleType (Functor _) -> assert false
-  in
-  { i with decl = { i.decl with module_decl } }
+  let include_decl, _sg = split_include_decl i.decl in
+  let decl = unsplit_include_decl include_decl s in
+  { i with decl }
 
 module LocalIdents = struct
   open Odoc_model
