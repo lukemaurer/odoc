@@ -269,13 +269,21 @@ and include_expansion =
   let open Lang.Include in
   Record [ F ("shadowed", (fun t -> t.shadowed), include_shadowed) ]
 
+and include_raw_decl =
+  let open Lang.Include in
+  Record
+    [
+      F ("module_decl", (fun t -> t.module_decl), module_decl);
+      F ("has_expansion_in_mto", (fun t -> t.has_expansion_in_mto), bool);
+    ]
+
 and include_t =
   let open Lang.Include in
   Record
     [
       F ("parent", (fun t -> t.parent), identifier);
       F ("doc", (fun t -> t.doc), docs);
-      F ("decl", (fun t -> t.decl), module_decl);
+      F ("decl", (fun t -> t.decl), include_raw_decl);
       F ("status", (fun t -> t.status), inline_status);
       F ("expansion", (fun t -> t.expansion), include_expansion);
     ]

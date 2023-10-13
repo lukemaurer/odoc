@@ -310,7 +310,7 @@ end
 and Include : sig
   type decl = Alias of Cpath.module_ | ModuleType of ModuleType.U.expr
 
-  type raw_decl = Module.decl (* Must be expanded and not a functor *)
+  type raw_decl
 
   type t = {
     parent : Odoc_model.Paths.Identifier.Signature.t;
