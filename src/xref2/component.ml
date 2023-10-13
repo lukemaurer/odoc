@@ -71,10 +71,6 @@ module Opt = struct
 end
 
 module rec Module : sig
-  module U : sig
-    type decl = Alias of Cpath.module_ | ModuleType of ModuleType.U.expr
-  end
-
   type decl =
     | Alias of Cpath.module_ * ModuleType.simple_expansion option
     | ModuleType of ModuleType.expr
@@ -346,7 +342,9 @@ end =
   Open
 
 and Include : sig
-  type decl = Module.decl
+  type decl = Alias of Cpath.module_ | ModuleType of ModuleType.U.expr
+
+  type raw_decl = Module.decl
 
   type t = {
     parent : Odoc_model.Paths.Identifier.Signature.t;
@@ -354,8 +352,7 @@ and Include : sig
     doc : CComment.docs;
     status : [ `Default | `Inline | `Closed | `Open ];
     shadowed : Odoc_model.Lang.Include.shadowed;
-    expansion_ : CComment.docs;
-    decl : decl;
+    decl : raw_decl;
     loc : Odoc_model.Location_.span;
   }
 end =
@@ -553,7 +550,7 @@ module Element = struct
     | `Page (id, _) -> (id :> t)
 end
 
-let split_include_decl (d : Include.decl) : Module.U.decl * Signature.t =
+let split_include_decl (d : Include.raw_decl) : Include.decl * Signature.t =
   match d with
   | Alias (p, Some (Signature s)) -> (Alias p, s)
   | ModuleType (Path { p_path; p_expansion = Some (Signature s) }) ->
@@ -567,7 +564,8 @@ let split_include_decl (d : Include.decl) : Module.U.decl * Signature.t =
       (ModuleType (TypeOf t), s)
   | _ -> assert false
 
-let unsplit_include_decl (d : Module.U.decl) (s : Signature.t) : Include.decl =
+let unsplit_include_decl (d : Include.decl) (s : Signature.t) : Include.raw_decl
+    =
   let exp : ModuleType.simple_expansion option = Some (Signature s) in
   match d with
   | Alias p -> Alias (p, exp)
@@ -725,7 +723,7 @@ module Fmt = struct
     Format.fprintf ppf "%a (sig = %a)" include_decl decl signature expansion
 
   and include_decl ppf =
-    let open Module.U in
+    let open Include in
     function
     | Alias p -> Format.fprintf ppf "= %a" module_path p
     | ModuleType mt -> Format.fprintf ppf ": %a" u_module_type_expr mt
@@ -2079,8 +2077,7 @@ module Of_Lang = struct
 
   and include_decl ident_map m =
     match m with
-    | Odoc_model.Lang.Module.U.Alias p ->
-        Module.U.Alias (module_path ident_map p)
+    | Odoc_model.Lang.Include.Alias p -> Include.Alias (module_path ident_map p)
     | ModuleType s -> ModuleType (u_module_type_expr ident_map s)
 
   and simple_expansion ident_map
@@ -2272,12 +2269,14 @@ module Of_Lang = struct
 
   and include_ ident_map i =
     let open Odoc_model.Lang.Include in
-    let decl = module_decl ident_map i.decl in
+    let i_decl, i_expansion = Odoc_model.Lang.split_include_decl i.decl in
+    let decl = include_decl ident_map i_decl in
+    let expansion_ = apply_sig_map ident_map i_expansion in
+    let decl = unsplit_include_decl decl expansion_ in
     {
       Include.parent = i.parent;
       doc = docs ident_map i.doc;
       shadowed = i.expansion.shadowed;
-      expansion_ = docs ident_map i.expansion.doc;
       status = i.status;
       strengthened = option module_path ident_map i.strengthened;
       decl;
@@ -2512,5 +2511,6 @@ let module_of_functor_argument (arg : FunctorParameter.parameter) =
 (** This is equivalent to {!Lang.extract_signature_doc}. *)
 let extract_signature_doc (s : Signature.t) =
   match (s.doc, s.items) with
-  | [], Include { expansion_; status = `Inline; _ } :: _ -> expansion_
+  | [], Include ({ status = `Inline; _ } as i) :: _ ->
+      (signature_of_include i).doc
   | doc, _ -> doc

@@ -1701,23 +1701,24 @@ module Make (Syntax : SYNTAX) = struct
              | Some te -> type_expr te)
 
     and include_ (t : Odoc_model.Lang.Include.t) =
+      let t_decl, t_content = Odoc_model.Lang.split_include_decl t.decl in
       let decl_hidden =
-        match t.decl with
-        | Alias (p, _) -> Paths.Path.(is_hidden (p :> t))
-        | ModuleType mty -> mty_hidden mty
+        match t_decl with
+        | Alias p -> Paths.Path.(is_hidden (p :> t))
+        | ModuleType mty -> umty_hidden mty
       in
       let status = if decl_hidden then `Inline else t.status in
 
-      let _, content = signature (Odoc_model.Lang.signature_of_include t) in
+      let _, content = signature t_content in
 
       let summary =
         if decl_hidden then O.render (O.keyword "include" ++ O.txt " ...")
         else
           let include_decl =
-            match t.decl with
-            | Odoc_model.Lang.Module.Alias (mod_path, _) ->
+            match t_decl with
+            | Odoc_model.Lang.Include.Alias mod_path ->
                 Link.from_path (mod_path :> Paths.Path.t)
-            | ModuleType mt -> mty mt
+            | ModuleType mt -> umty mt
           in
           O.render
             (O.keyword "include" ++ O.txt " " ++ include_decl

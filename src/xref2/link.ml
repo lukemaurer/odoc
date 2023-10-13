@@ -556,7 +556,7 @@ and module_decl : Env.t -> Id.Signature.t -> Module.decl -> Module.decl =
   | Alias (p, e) ->
       Alias (module_path env p, Opt.map (simple_expansion env id) e)
 
-and include_decl : Env.t -> Id.Signature.t -> Module.U.decl -> Module.U.decl =
+and include_decl : Env.t -> Id.Signature.t -> Include.decl -> Include.decl =
  fun env id decl ->
   match decl with
   | ModuleType expr -> ModuleType (u_module_type_expr env id expr)

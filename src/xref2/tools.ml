@@ -1761,18 +1761,15 @@ and fragmap :
                   w_expr = umty_of_mty mty';
                 }))
   in
-  let map_include_decl decl subst new_sg =
-    let open Component.Module in
+  let map_include_decl decl subst =
+    let open Component.Include in
     match decl with
-    | Alias _ -> ModuleType (Signature new_sg)
-    | ModuleType mty' ->
-        ModuleType
-          (With
-             {
-               w_substitutions = [ subst ];
-               w_expr = umty_of_mty mty';
-               w_expansion = Some (Signature new_sg);
-             })
+    | Alias p ->
+        expansion_of_module_path env ~strengthen:true p >>= assert_not_functor
+        >>= fun sg ->
+        fragmap ~mark_substituted env subst sg >>= fun sg ->
+        Ok (ModuleType (Signature sg))
+    | ModuleType mty' -> Ok (ModuleType (With ([ subst ], mty')))
   in
   let map_module m new_subst =
     let open Component.Module in
@@ -1819,22 +1816,22 @@ and fragmap :
                     subbed_modules,
                     Component.Signature.RModule (id, y) :: removed ))
         | Component.Signature.Include i, _ ->
-            let expansion_ = Component.signature_of_include i in
-            map_signature map expansion_.items
+            let i_decl, i_expansion = Component.split_include_decl i.decl in
+            map_signature map i_expansion.items
             >>= fun (items', handled', subbed_modules', removed') ->
             let component =
               if handled' then
+                map_include_decl i_decl sub >>= fun decl ->
                 let expansion_ =
                   Component.Signature.
                     {
-                      expansion_ with
+                      i_expansion with
                       items = items';
                       removed = removed';
                       compiled = false;
                     }
                 in
-                let decl = map_include_decl i.decl sub expansion_ in
-
+                let decl = Component.unsplit_include_decl decl expansion_ in
                 Ok
                   (Component.Signature.Include
                      { i with decl; strengthened = None })

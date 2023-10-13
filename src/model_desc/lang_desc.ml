@@ -267,11 +267,7 @@ and include_shadowed =
 
 and include_expansion =
   let open Lang.Include in
-  Record
-    [
-      F ("shadowed", (fun t -> t.shadowed), include_shadowed);
-      F ("doc", (fun t -> t.doc), docs);
-    ]
+  Record [ F ("shadowed", (fun t -> t.shadowed), include_shadowed) ]
 
 and include_t =
   let open Lang.Include in

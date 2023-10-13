@@ -30,10 +30,6 @@ module Source_info = struct
 end
 
 module rec Module : sig
-  module U : sig
-    type decl = Alias of Path.Module.t | ModuleType of ModuleType.U.expr
-  end
-
   type decl =
     | Alias of (Path.Module.t * ModuleType.simple_expansion option)
     | ModuleType of ModuleType.expr
@@ -182,8 +178,6 @@ end =
 (** {3 Includes} *)
 
 and Include : sig
-  type decl = Module.decl (* Must be expanded and not a functor *)
-
   type shadowed = {
     s_modules : string list;
     s_module_types : string list;
@@ -193,7 +187,12 @@ and Include : sig
     s_class_types : string list;
   }
 
-  type expansion = { shadowed : shadowed; doc : Comment.docs }
+  type expansion = { shadowed : shadowed }
+
+  (* Explicitly unexpanded decl *)
+  type decl = Alias of Path.Module.t | ModuleType of ModuleType.U.expr
+
+  type raw_decl = Module.decl (* Must be expanded and not a functor *)
 
   type t = {
     loc : Location_.span;
@@ -201,7 +200,7 @@ and Include : sig
     strengthened : Path.Module.t option;
     doc : Comment.docs;
     status : [ `Inline | `Closed | `Open | `Default ];
-    decl : decl;
+    decl : raw_decl;
     expansion : expansion;
   }
 end =
@@ -531,17 +530,6 @@ let umty_of_mty : ModuleType.expr -> ModuleType.U.expr option = function
   | TypeOf t -> Some (TypeOf t)
   | With { w_substitutions; w_expr; _ } -> Some (With (w_substitutions, w_expr))
 
-(** Query the top-comment of a signature. This is [s.doc] most of the time with
-    an exception for signature starting with an inline includes. *)
-let extract_signature_doc (s : Signature.t) =
-  match (s.doc, s.items) with
-  | [], Include { expansion; status = `Inline; _ } :: _ ->
-      (* A signature that starts with an [@inline] include inherits the
-         top-comment from the expansion. This comment is not rendered for
-         [include] items. *)
-      expansion.doc
-  | doc, _ -> doc
-
 let signature_of_include (i : Include.t) =
   match i.decl with
   | Alias (_, Some (Signature s)) -> s
@@ -564,7 +552,7 @@ let set_signature_of_include (i : Include.t) s =
   in
   { i with decl }
 
-let split_include_decl (d : Include.decl) : Module.U.decl * Signature.t =
+let split_include_decl (d : Include.raw_decl) : Include.decl * Signature.t =
   match d with
   | Alias (p, Some (Signature s)) -> (Alias p, s)
   | ModuleType (Path { p_path; p_expansion = Some (Signature s) }) ->
@@ -578,7 +566,8 @@ let split_include_decl (d : Include.decl) : Module.U.decl * Signature.t =
       (ModuleType (TypeOf t), s)
   | _ -> assert false
 
-let unsplit_include_decl (d : Module.U.decl) (s : Signature.t) : Include.decl =
+let unsplit_include_decl (d : Include.decl) (s : Signature.t) : Include.raw_decl
+    =
   let exp : ModuleType.simple_expansion option = Some (Signature s) in
   match d with
   | Alias p -> Alias (p, exp)
@@ -587,3 +576,14 @@ let unsplit_include_decl (d : Module.U.decl) (s : Signature.t) : Include.decl =
   | ModuleType (With (w_substitutions, w_expr)) ->
       ModuleType (With { w_substitutions; w_expr; w_expansion = exp })
   | ModuleType (TypeOf t) -> ModuleType (TypeOf { t with t_expansion = exp })
+
+(** Query the top-comment of a signature. This is [s.doc] most of the time with
+    an exception for signature starting with an inline includes. *)
+let extract_signature_doc (s : Signature.t) =
+  match (s.doc, s.items) with
+  | [], Include ({ status = `Inline; _ } as i) :: _ ->
+      (* A signature that starts with an [@inline] include inherits the
+         top-comment from the expansion. This comment is not rendered for
+         [include] items. *)
+      (signature_of_include i).doc
+  | doc, _ -> doc

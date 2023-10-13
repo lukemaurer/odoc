@@ -147,9 +147,15 @@ and simple_expansion :
   | Functor (Unit, sg) -> Functor (Unit, simple_expansion env sg)
 
 and include_ env i =
-  let content = signature_of_include i in
-  let items, env' = signature_items env content.items in
-  (set_signature_of_include i { content with items }, env')
+  let i_decl, i_content = split_include_decl i.decl in
+  let decl =
+    match i_decl with
+    | Alias _ -> i_decl
+    | ModuleType t -> ModuleType (u_module_type_expr env i.parent t)
+  in
+  let items, env' = signature_items env i_content.items in
+  let decl = unsplit_include_decl decl { i_content with items } in
+  ({ i with decl }, env')
 
 let signature env =
   let rec loop sg =

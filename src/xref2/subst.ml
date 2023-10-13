@@ -760,8 +760,9 @@ and module_decl s t =
   | ModuleType t -> ModuleType (module_type_expr s t)
 
 and include_decl s t =
-  (* Preserves the invariant that the decl is expanded and not a functor *)
-  module_decl s t
+  match t with
+  | Include.Alias p -> Include.Alias (module_path s p)
+  | ModuleType t -> ModuleType (u_module_type_expr s t)
 
 and module_ s t =
   let open Component.Module in
@@ -819,9 +820,11 @@ and extension s e =
 
 and include_ s i =
   let open Component.Include in
+  let i_decl, i_expansion = Component.split_include_decl i.decl in
+  let decl = include_decl s i_decl in
   {
     i with
-    decl = include_decl s i.decl;
+    decl = Component.unsplit_include_decl decl i_expansion;
     strengthened = option_ module_path s i.strengthened;
   }
 

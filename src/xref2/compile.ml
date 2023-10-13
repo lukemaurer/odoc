@@ -351,9 +351,9 @@ and module_decl : Env.t -> Id.Signature.t -> Module.decl -> Module.decl =
   | ModuleType expr -> ModuleType (module_type_expr env id expr)
   | Alias (p, expn) -> Alias (module_path env p, expn)
 
-and include_decl : Env.t -> Id.Signature.t -> Module.U.decl -> Module.U.decl =
+and include_decl : Env.t -> Id.Signature.t -> Include.decl -> Include.decl =
  fun env id decl ->
-  let open Module.U in
+  let open Include in
   match decl with
   | ModuleType expr -> ModuleType (u_module_type_expr env id expr)
   | Alias p -> Alias (module_path env p)

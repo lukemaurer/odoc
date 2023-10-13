@@ -626,18 +626,21 @@ and include_decl :
     Component.Include.decl ->
     Odoc_model.Lang.Include.decl =
  fun map identifier d ->
-  (* Preserves the invariant that the decl is expanded and not a functor *)
-  module_decl map identifier d
+  match d with
+  | Alias p -> Alias (Path.module_ map p)
+  | ModuleType mty -> ModuleType (u_module_type_expr map identifier mty)
 
 and include_ parent map i =
   let open Component.Include in
   let shadowed = combine_shadowed map.shadowed i.shadowed in
+  let i_decl, i_content = Component.split_include_decl i.decl in
+  let decl = include_decl map parent i_decl in
+  let content = signature parent { map with shadowed } i_content in
   {
     Odoc_model.Lang.Include.parent;
     doc = docs (parent :> Identifier.LabelParent.t) i.doc;
-    decl = include_decl map parent i.decl;
-    expansion =
-      { shadowed; doc = docs (parent :> Identifier.LabelParent.t) i.expansion_ };
+    decl = Lang.unsplit_include_decl decl content;
+    expansion = { shadowed };
     status = i.status;
     strengthened = Opt.map (Path.module_ map) i.strengthened;
     loc = i.loc;
