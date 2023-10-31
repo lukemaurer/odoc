@@ -43,7 +43,7 @@ module IdentMap = Map.Make (struct
 end)
 
 module Delayed = struct
-  let eager = ref false
+  let eager = ref true
 
   type 'a t = { mutable v : 'a option; mutable get : (unit -> 'a) option }
 
@@ -570,6 +570,12 @@ let split_include_decl (d : Include.raw_decl) : Include.decl * Signature.t =
       (ModuleType (TypeOf t), s)
   | _ -> assert false
 
+let pp_sig = ref (fun _ _ -> assert false)
+
+let assert_same_sigs l s s' =
+  if s <> s' then
+    Format.eprintf "@[<v>%s@.   %a@.<> %a@.@]" l !pp_sig s !pp_sig s'
+
 let unsplit_include_decl (d : Include.decl) (s : Signature.t) : Include.raw_decl
     =
   let exp : ModuleType.simple_expansion option = Some (Signature s) in
@@ -578,10 +584,19 @@ let unsplit_include_decl (d : Include.decl) (s : Signature.t) : Include.raw_decl
     | Alias p -> Alias (p, exp)
     | ModuleType (Path p_path) ->
         ModuleType (Path { p_path; p_expansion = exp })
-    | ModuleType (Signature _) -> ModuleType (Signature s)
+    | ModuleType (Signature s') ->
+        assert_same_sigs "Signature" s s';
+        ModuleType (Signature s)
     | ModuleType (With (w_substitutions, w_expr)) ->
         ModuleType (With { w_substitutions; w_expr; w_expansion = exp })
-    | ModuleType (TypeOf t) -> ModuleType (TypeOf { t with t_expansion = exp })
+    | ModuleType (TypeOf t) ->
+        let () =
+          match t.t_expansion with
+          | Some (Signature s') -> assert_same_sigs "TypeOf" s s'
+          | Some (Functor _) -> assert false
+          | None -> ()
+        in
+        ModuleType (TypeOf { t with t_expansion = exp })
   in
   let has_expansion_in_mto =
     match d with
@@ -1560,6 +1575,8 @@ let set_signature_of_include (i : Include.t) s =
   let include_decl, _sg = split_include_decl i.decl in
   let decl = unsplit_include_decl include_decl s in
   { i with decl }
+
+let () = pp_sig := Fmt.signature
 
 module LocalIdents = struct
   open Odoc_model
