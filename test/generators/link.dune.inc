@@ -2549,7 +2549,17 @@
    Module-module-type-S8.html.gen
    Module-module-type-S9.html.gen
    Module-Mutually.html.gen
-   Module-Recursive.html.gen)
+   Module-Recursive.html.gen
+   Module-module-type-X.html.gen
+   Module-module-type-X-AA.html.gen
+   Module-module-type-X-AA-A.html.gen
+   Module-module-type-X-AA-B.html.gen
+   Module-module-type-X-module-type-B.html.gen
+   Module-XA.html.gen
+   Module-module-type-Y.html.gen
+   Module-module-type-Y-AA.html.gen
+   Module-module-type-Y-AA-B.html.gen
+   Module-module-type-Y-module-type-B.html.gen)
   (action
    (run
     odoc
@@ -2628,7 +2638,51 @@
  (rule
   (alias runtest)
   (action
-   (diff Module-Recursive.html Module-Recursive.html.gen))))
+   (diff Module-Recursive.html Module-Recursive.html.gen)))
+ (rule
+  (alias runtest)
+  (action
+   (diff Module-module-type-X.html Module-module-type-X.html.gen)))
+ (rule
+  (alias runtest)
+  (action
+   (diff Module-module-type-X-AA.html Module-module-type-X-AA.html.gen)))
+ (rule
+  (alias runtest)
+  (action
+   (diff Module-module-type-X-AA-A.html Module-module-type-X-AA-A.html.gen)))
+ (rule
+  (alias runtest)
+  (action
+   (diff Module-module-type-X-AA-B.html Module-module-type-X-AA-B.html.gen)))
+ (rule
+  (alias runtest)
+  (action
+   (diff
+    Module-module-type-X-module-type-B.html
+    Module-module-type-X-module-type-B.html.gen)))
+ (rule
+  (alias runtest)
+  (action
+   (diff Module-XA.html Module-XA.html.gen)))
+ (rule
+  (alias runtest)
+  (action
+   (diff Module-module-type-Y.html Module-module-type-Y.html.gen)))
+ (rule
+  (alias runtest)
+  (action
+   (diff Module-module-type-Y-AA.html Module-module-type-Y-AA.html.gen)))
+ (rule
+  (alias runtest)
+  (action
+   (diff Module-module-type-Y-AA-B.html Module-module-type-Y-AA-B.html.gen)))
+ (rule
+  (alias runtest)
+  (action
+   (diff
+    Module-module-type-Y-module-type-B.html
+    Module-module-type-Y-module-type-B.html.gen))))
 
 (subdir
  html
@@ -2672,7 +2726,8 @@
    Module.3o.gen
    Module.M'.3o.gen
    Module.Mutually.3o.gen
-   Module.Recursive.3o.gen)
+   Module.Recursive.3o.gen
+   Module.XA.3o.gen)
   (action
    (run odoc man-generate -o . --extra-suffix gen %{dep:../module.odocl})))
  (rule
@@ -2690,7 +2745,11 @@
  (rule
   (alias runtest)
   (action
-   (diff Module.Recursive.3o Module.Recursive.3o.gen))))
+   (diff Module.Recursive.3o Module.Recursive.3o.gen)))
+ (rule
+  (alias runtest)
+  (action
+   (diff Module.XA.3o Module.XA.3o.gen))))
 
 (subdir
  man

@@ -737,6 +737,14 @@ module Path = struct
 
       let is_hidden m =
         is_resolved_hidden (m : t :> Paths_types.Resolved_path.any)
+
+      let rec fake_of_module_path : Paths_types.Path.module_ -> t = function
+        | `Resolved p -> p
+        | `Identifier (i, _) -> `Identifier i
+        | `Root r -> failwith (Format.asprintf "no dice: %s" r)
+        | `Forward _ -> failwith "urk"
+        | `Dot (m, s) -> `Module (fake_of_module_path m, ModuleName.make_std s)
+        | `Apply (m1, m2) -> `Apply (fake_of_module_path m1, fake_of_module_path m2)
     end
 
     module ModuleType = struct

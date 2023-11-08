@@ -342,6 +342,8 @@ module rec Path : sig
 
       val is_hidden : t -> weak_canonical_test:bool -> bool
 
+      val fake_of_module_path : Path.Module.t -> t
+
       (* val identifier : t -> Identifier.Path.Module.t *)
 
       (* val root : t -> string option *)

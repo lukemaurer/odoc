@@ -159,3 +159,76 @@ https://caml\.inria\.fr/mantis/view\.php?id=7701
 \f[CB]module\fR Mutually : \f[CB]sig\fR \.\.\. \f[CB]end\fR
 .sp 
 \f[CB]module\fR Recursive : \f[CB]sig\fR \.\.\. \f[CB]end\fR
+.sp 
+\f[CB]module\fR \f[CB]type\fR X = \f[CB]sig\fR
+.br 
+.ti +2
+\f[CB]module\fR AA : \f[CB]sig\fR
+.br 
+.ti +4
+\f[CB]module\fR A : \f[CB]sig\fR
+.br 
+.ti +6
+\f[CB]type\fR x
+.br 
+.ti +4
+\f[CB]end\fR
+.sp 
+.ti +4
+\f[CB]module\fR B : \f[CB]sig\fR
+.br 
+.ti +6
+\f[CB]type\fR x
+.br 
+.ti +4
+\f[CB]end\fR
+.sp 
+.ti +4
+\f[CB]type\fR t
+.br 
+.ti +2
+\f[CB]end\fR
+.sp 
+.ti +2
+\f[CB]module\fR \f[CB]type\fR B = \f[CB]sig\fR
+.br 
+.ti +4
+\f[CB]type\fR x
+.br 
+.ti +2
+\f[CB]end\fR
+.br 
+\f[CB]end\fR
+.sp 
+\f[CB]module\fR XA : \f[CB]sig\fR \.\.\. \f[CB]end\fR
+.sp 
+\f[CB]module\fR \f[CB]type\fR Y = \f[CB]sig\fR
+.br 
+.ti +2
+\f[CB]module\fR AA : \f[CB]sig\fR
+.br 
+.ti +4
+\f[CB]module\fR B : \f[CB]sig\fR
+.br 
+.ti +6
+\f[CB]type\fR x
+.br 
+.ti +4
+\f[CB]end\fR
+.sp 
+.ti +4
+\f[CB]type\fR t
+.br 
+.ti +2
+\f[CB]end\fR
+.sp 
+.ti +2
+\f[CB]module\fR \f[CB]type\fR B = \f[CB]sig\fR
+.br 
+.ti +4
+\f[CB]type\fR x
+.br 
+.ti +2
+\f[CB]end\fR
+.br 
+\f[CB]end\fR

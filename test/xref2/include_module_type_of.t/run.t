@@ -37,5 +37,16 @@ error. If it doesn't here, that particular issue is fixed!
 
   $ ocamlc -c -bin-annot uwt_base.mli
   $ odoc compile uwt_base.cmti
+  File "uwt_base.cmti":
+  Warning: Failed to lookup module type (root Uwt_base).Fs_functions Unresolved original module path identifier((root Uwt_base).Base.Fs_types, false) (Lookup failure (module): (root Uwt_base).Base.Fs_types)
+  File "uwt_base.cmti":
+  Warning: Failed to compile expansion for include : module type of identifier((root Uwt_base).Fs_types, false) with [root.uv_open_flag = identifier((root Uwt_base).Fs_types, false).uv_open_flag] Unresolved original module path identifier((root Uwt_base).Base.Fs_types, false) (Lookup failure (module): (root Uwt_base).Base.Fs_types)
+  File "uwt_base.cmti":
+  Warning: Failed to lookup module type (root Uwt_base).Fs_functions Unresolved original module path identifier((root Uwt_base).Base.Fs_types, false) (Lookup failure (module): (root Uwt_base).Base.Fs_types)
+  File "uwt_base.cmti":
+  Warning: Failed to compile expansion for include : module type of identifier((root Uwt_base).Fs_types, false) with [root.uv_open_flag = identifier((root Uwt_base).Fs_types, false).uv_open_flag] Unresolved original module path identifier((root Uwt_base).Base.Fs_types, false) (Lookup failure (module): (root Uwt_base).Base.Fs_types)
   $ odoc link uwt_base.odoc
+  File "uwt_base.odoc":
+  Warning: While resolving the expansion of include at File "uwt_base.mli", line 28, character 0
+  Failed to resolve module type expr module type of r((root Uwt_base).Fs_types) Unresolved original module path identifier((root Uwt_base).Base.Fs_types, false) (Lookup failure (module): (root Uwt_base).Base.Fs_types)
 

@@ -165,7 +165,7 @@ and moduletype_u_expr =
           ( "With",
             (t, e),
             Pair (List moduletype_substitution, moduletype_u_expr) )
-    | TypeOf x -> C ("TypeOf", x, moduletype_typeof_t))
+    | TypeOf (t, o) -> C ("TypeOf", (t, (o :> Paths.Path.t)), Pair (moduletype_type_of_desc, path)))
 
 and moduletype_t =
   let open Lang.ModuleType in

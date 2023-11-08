@@ -201,6 +201,7 @@ and ModuleType : sig
 
   type typeof_t = {
     t_desc : type_of_desc;
+    t_original_path : Odoc_model.Paths.Path.Module.t;
     t_expansion : simple_expansion option;
   }
 
@@ -209,7 +210,7 @@ and ModuleType : sig
       | Path of Cpath.module_type
       | Signature of Signature.t
       | With of substitution list * expr
-      | TypeOf of typeof_t
+      | TypeOf of type_of_desc * Odoc_model.Paths.Path.Module.t
   end
 
   type path_t = {
@@ -750,7 +751,7 @@ module Fmt = struct
     | With (subs, e) ->
         Format.fprintf ppf "%a with [%a]" u_module_type_expr e substitution_list
           subs
-    | TypeOf { t_desc; _ } -> module_type_type_of_desc ppf t_desc
+    | TypeOf (t_desc, _) -> module_type_type_of_desc ppf t_desc
 
   and module_type_expr ppf mt =
     let open ModuleType in
@@ -2158,14 +2159,13 @@ module Of_Lang = struct
     | With (w, e) ->
         let w' = List.map (with_module_type_substitution ident_map) w in
         With (w', u_module_type_expr ident_map e)
-    | TypeOf { t_desc; t_expansion } ->
+    | TypeOf (t_desc, t_original_path) ->
         let t_desc =
           match t_desc with
           | ModPath p -> ModuleType.ModPath (module_path ident_map p)
           | StructInclude p -> StructInclude (module_path ident_map p)
         in
-        let t_expansion = Opt.map (simple_expansion ident_map) t_expansion in
-        TypeOf { t_desc; t_expansion }
+        TypeOf (t_desc, t_original_path)
 
   and module_type_expr ident_map m =
     let open Odoc_model in
@@ -2213,14 +2213,14 @@ module Of_Lang = struct
     | Lang.ModuleType.Functor (Unit, expr) ->
         let expr' = module_type_expr ident_map expr in
         ModuleType.Functor (Unit, expr')
-    | Lang.ModuleType.TypeOf { t_desc; t_expansion } ->
+    | Lang.ModuleType.TypeOf { t_desc; t_original_path; t_expansion } ->
         let t_desc =
           match t_desc with
           | ModPath p -> ModuleType.ModPath (module_path ident_map p)
           | StructInclude p -> StructInclude (module_path ident_map p)
         in
         let t_expansion = option simple_expansion ident_map t_expansion in
-        ModuleType.(TypeOf { t_desc; t_expansion })
+        ModuleType.(TypeOf { t_desc; t_original_path; t_expansion })
 
   and module_type ident_map m =
     let expr =

@@ -42,3 +42,19 @@ open! M'
 
 module rec Mutually : sig end
 and Recursive : sig end
+
+module type X = sig
+  module AA : sig
+    module A : sig type x end
+    module B : sig type x end
+    type t
+  end
+  module type B = module type of AA.A
+end
+
+module XA : sig
+  type x
+  type y
+end
+
+module type Y = X with module AA.A := XA
