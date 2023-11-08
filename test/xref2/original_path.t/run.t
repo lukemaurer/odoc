@@ -269,6 +269,21 @@
                                 }
                               }
                             },
+                            "t_original_path": {
+                              "`Identifier": [
+                                {
+                                  "`Module": [
+                                    {
+                                      "`ModuleType": [
+                                        { "`Root": [ "None", "B" ] }, "Foo"
+                                      ]
+                                    },
+                                    "Y"
+                                  ]
+                                },
+                                "false"
+                              ]
+                            },
                             "t_expansion": {
                               "Some": {
                                 "Functor": [

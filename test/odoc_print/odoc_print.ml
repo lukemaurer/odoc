@@ -345,7 +345,7 @@ module Print_short = struct
     | With (subs, e) ->
         Format.fprintf ppf "%a with [%a]" u_module_type_expr e substitution_list
           subs
-    | TypeOf { t_desc; _ } -> module_type_type_of_desc ppf t_desc
+    | TypeOf (t_desc, _t_original_path) -> module_type_type_of_desc ppf t_desc
 
   and module_type_type_of_desc ppf t =
     match t with
