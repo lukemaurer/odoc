@@ -26,11 +26,13 @@ module type Name = sig
 
   val of_ident : Ident.t -> t
 
-  val internal_of_string : string -> t
+  val hidden_of_string : string -> t
 
-  val internal_of_ident : Ident.t -> t
+  val hidden_of_ident : Ident.t -> t
 
-  val is_internal : t -> bool
+  val shadowed_of_string : string -> t
+
+  val shadowed_of_ident : Ident.t -> t
 
   val equal : t -> t -> bool
 
@@ -44,13 +46,17 @@ end
 let internal_counter = ref 0
 
 module Name : Name = struct
-  type t = Internal of string * int | Std of string
+  type t = Hidden of string | Shadowed of string * int | Std of string
 
   let to_string = function
     | Std s -> s
-    | Internal (s, i) -> Printf.sprintf "{%s}%d" s i
+    | Hidden s -> Printf.sprintf "%s" s
+    | Shadowed (s, i) -> Printf.sprintf "{%s}%d" s i
 
-  let to_string_unsafe = function Std s -> s | Internal (s, _i) -> s
+  let to_string_unsafe = function
+    | Std s -> s
+    | Hidden s -> s
+    | Shadowed (s, _i) -> s
 
   let make_std s =
     let s = parenthesise s in
@@ -58,13 +64,15 @@ module Name : Name = struct
 
   let of_ident id = make_std (Ident.name id)
 
-  let internal_of_string id =
+  let hidden_of_string id = Hidden id
+
+  let hidden_of_ident id = hidden_of_string (Ident.name id)
+
+  let shadowed_of_string id =
     incr internal_counter;
-    Internal (id, !internal_counter)
+    Shadowed (id, !internal_counter)
 
-  let internal_of_ident id = internal_of_string (Ident.name id)
-
-  let is_internal = function Std _ -> false | Internal _ -> true
+  let shadowed_of_ident id = shadowed_of_string (Ident.name id)
 
   let equal (x : t) (y : t) = x = y
 
@@ -81,7 +89,8 @@ module Name : Name = struct
           else aux (i + 1)
         in
         aux 0
-    | Internal _ -> true
+    | Hidden _ -> true
+    | Shadowed _ -> true
 end
 
 module type SimpleName = sig

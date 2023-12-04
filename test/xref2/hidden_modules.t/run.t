@@ -66,8 +66,6 @@ This shouldn't cause any warnings:
 
   $ odoc link test.odoc -I .
   File "test.odoc":
-  Warning: Failed to resolve module path identifier((root Test).Enclosing, false).Hidden.Still_hidden Parent_module: Find failure
-  File "test.odoc":
   Warning: Failed to lookup type identifier((root Test).CanonicalTest, false).Base__.List.t Parent_module: Parent_module: Find failure
   File "test.mli", line 25, characters 8-17:
   Warning: Failed to resolve reference unresolvedroot(List).t Couldn't find "List"
@@ -89,21 +87,7 @@ There should be an expansion on `NotHidden`
     "doc": [],
     "type_": {
       "Constr": [
-        {
-          "`Resolved": {
-            "`Identifier": {
-              "`Type": [
-                {
-                  "`Module": [
-                    { "`Root": [ "None", "Test" ] }, "NonCanonical"
-                  ]
-                },
-                "hidden__type"
-              ]
-            }
-          }
-        },
-        []
+        { "`Resolved": { "`Identifier": { "`CoreType": "int" } } }, []
       ]
     },
     "value": "Abstract"
