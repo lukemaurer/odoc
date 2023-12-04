@@ -357,7 +357,7 @@ and Include : sig
     doc : CComment.docs;
     status : [ `Default | `Inline | `Closed | `Open ];
     shadowed : Odoc_model.Lang.Include.shadowed;
-    expansion_ : Signature.t;
+    expansion_ : Signature.t option;
     decl : decl;
     loc : Odoc_model.Location_.span;
   }
@@ -708,7 +708,7 @@ module Fmt = struct
   and class_type ppf _c = Format.fprintf ppf "<todo>"
 
   and include_ ppf i =
-    Format.fprintf ppf "%a (sig = %a)" include_decl i.decl signature
+    Format.fprintf ppf "%a (sig = %a)" include_decl i.decl (option signature)
       i.expansion_
 
   and include_decl ppf =
@@ -1667,7 +1667,10 @@ module LocalIdents = struct
         | ClassType (_, c) ->
             { ids with class_types = c.ClassType.id :: ids.class_types }
         | TypExt _ | Exception _ | Value _ | Comment _ -> ids
-        | Include i -> signature i.Include.expansion.content ids
+        | Include i -> (
+            match i.Include.expansion.content with
+            | Some i -> signature i ids
+            | None -> ids)
         | Open o -> signature o.Open.expansion ids)
       ids s
 
@@ -2386,7 +2389,7 @@ module Of_Lang = struct
       Include.parent = i.parent;
       doc = docs ident_map i.doc;
       shadowed = i.expansion.shadowed;
-      expansion_ = apply_sig_map ident_map i.expansion.content;
+      expansion_ = option apply_sig_map ident_map i.expansion.content;
       status = i.status;
       strengthened = option module_path ident_map i.strengthened;
       decl;
@@ -2621,5 +2624,5 @@ let module_of_functor_argument (arg : FunctorParameter.parameter) =
 (** This is equivalent to {!Lang.extract_signature_doc}. *)
 let extract_signature_doc (s : Signature.t) =
   match (s.doc, s.items) with
-  | [], Include { expansion_; status = `Inline; _ } :: _ -> expansion_.doc
+  | [], Include { expansion_ = Some e; status = `Inline; _ } :: _ -> e.doc
   | doc, _ -> doc

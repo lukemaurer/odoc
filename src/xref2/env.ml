@@ -722,7 +722,9 @@ let rec open_signature : Lang.Signature.t -> t -> t =
         | L.Signature.ClassType (_, c), _ ->
             let ty = class_type ident_map c in
             add_class_type c.id ty env
-        | L.Signature.Include i, _ -> open_signature i.expansion.content env
+        | L.Signature.Include { expansion = { content = Some c; _ }; _ }, _ ->
+            open_signature c env
+        | L.Signature.Include { expansion = { content = None; _ }; _ }, _ -> env
         | L.Signature.Open o, false -> open_signature o.expansion env
         (* The following are only added when linking *)
         | L.Signature.Open o, true ->

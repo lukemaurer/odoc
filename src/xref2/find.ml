@@ -64,9 +64,10 @@ let rec find_map f = function
 let find_in_sig sg f =
   let rec inner f = function
     | Signature.Include i :: tl -> (
-        match inner f i.Include.expansion_.items with
-        | Some _ as x -> x
-        | None -> inner f tl)
+        match i.expansion_ with
+        | None -> inner f tl
+        | Some e -> (
+            match inner f e.items with Some _ as x -> x | None -> inner f tl))
     | hd :: tl -> ( match f hd with Some _ as x -> x | None -> inner f tl)
     | [] -> None
   in
@@ -74,8 +75,10 @@ let find_in_sig sg f =
 
 let filter_in_sig sg f =
   let rec inner f = function
-    | Signature.Include i :: tl ->
-        inner f i.Include.expansion_.items @ inner f tl
+    | Signature.Include i :: tl -> (
+        match i.expansion_ with
+        | None -> inner f tl
+        | Some e -> inner f e.items @ inner f tl)
     | hd :: tl -> (
         match f hd with Some x -> x :: inner f tl | None -> inner f tl)
     | [] -> []

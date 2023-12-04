@@ -319,7 +319,7 @@ and Include : sig
     doc : CComment.docs;
     status : [ `Default | `Inline | `Closed | `Open ];
     shadowed : Odoc_model.Lang.Include.shadowed;
-    expansion_ : Signature.t;
+    expansion_ : Signature.t option;
     decl : decl;
     loc : Odoc_model.Location_.span;
   }

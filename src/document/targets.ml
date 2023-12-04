@@ -70,6 +70,7 @@ and module_type (t : Odoc_model.Lang.ModuleType.t) =
       let subpages = module_type_expr expr in
       url :: subpages
 
-and include_ (t : Odoc_model.Lang.Include.t) = signature t.expansion.content
+and include_ (t : Odoc_model.Lang.Include.t) =
+  match t.expansion.content with Some sg -> signature sg | None -> []
 
 and page (t : Odoc_model.Lang.Page.t) = [ Url.Path.from_identifier t.name ]

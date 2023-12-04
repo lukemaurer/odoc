@@ -752,7 +752,7 @@ and read_include env parent incl =
   let content, shadowed = Cmi.read_signature_noenv env parent (Odoc_model.Compat.signature incl.incl_type) in
   let expr = read_module_type env parent container incl.incl_mod in
   let umty = Odoc_model.Lang.umty_of_mty expr in 
-  let expansion = { content; shadowed; } in
+  let expansion = { content=None; shadowed; } in
   match umty with
   | Some uexpr ->
     let decl = Include.ModuleType uexpr in

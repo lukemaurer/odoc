@@ -11,32 +11,32 @@
   $ odoc compile -I . c.cmti
  
   $ odoc_print --short c.odoc 
-  include : module type of struct include A end (sig = module type {B}1 = A.B
-                                                       include : {B}1 (sig = 
-                                                         module {A}3 = A.A
-                                                         )
-                                                         module type {B1}2 = A.B1
-                                                         include : {B1}2 (sig = 
-                                                           module {A}3 = A.A
-                                                           )
-                                                           )
-                                                         include : module type of struct include B end (sig = 
-                                                           module type B = B.B
-                                                           include : B (sig = 
-                                                             module {A}4 = B.A
-                                                             )
-                                                             module type B1 = B.B1
-                                                             include : B1 (sig = 
-                                                               module {A}4 = B.A
-                                                               )
-                                                               )
-                                                             module A : sig
-                                                               include : module type of struct include {A}4 end (sig = 
-                                                                 include : module type of struct include B.{A}1 end (sig = 
-                                                                   type t = {A}4.t
-                                                                   )
-                                                                   type b = B.A.b
-                                                                   )
-                                                                 
-                                                                 end
-                                                               
+  include : module type of struct include A end (sig =  (sig=module type {B}1 = A.B
+                                                             include : {B}1 (sig =  (sig=
+                                                               module {A}1 = A.{A}1
+                                                               ))
+                                                               module type {B1}2 = A.B1
+                                                               include : {B1}2 (sig =  (sig=
+                                                                 module {A}3 = A.A
+                                                                 ))
+                                                                 ))
+                                                               include : module type of struct include B end (sig =  (sig=
+                                                                 module type B = B.B
+                                                                 include : B (sig =  (sig=
+                                                                   module {A}1 = B.{A}1
+                                                                   ))
+                                                                   module type B1 = B.B1
+                                                                   include : B1 (sig =  (sig=
+                                                                     module {A}4 = B.A
+                                                                     ))
+                                                                     ))
+                                                                   module A : sig
+                                                                     include : module type of struct include {A}4 end (sig =  (sig=
+                                                                      include : module type of struct include B.{A}1 end (sig =  (sig=
+                                                                      type t = B.A.t
+                                                                      ))
+                                                                      type b = B.A.b
+                                                                      ))
+                                                                      
+                                                                      end
+                                                                     

@@ -405,8 +405,8 @@ and include_ : Env.t -> Include.t -> Include.t * Env.t =
     with
     | Error e ->
         Errors.report ~what:(`Include decl) ~tools_error:e `Expand;
-        i.expansion
-    | Ok sg ->
+        None
+    | Ok sg -> (
         let map = Lang_of.with_shadowed i.expansion.shadowed in
         let sg' =
           match i.strengthened with
@@ -417,22 +417,22 @@ and include_ : Env.t -> Include.t -> Include.t * Env.t =
         in
         let e = Lang_of.(simple_expansion map i.parent (Signature sg')) in
 
-        let expansion_sg =
-          match e with
-          | ModuleType.Signature sg -> sg
-          | _ ->
-              failwith "Expansion shouldn't be anything other than a signature"
-        in
-        { i.expansion with content = expansion_sg }
+        match e with
+        | ModuleType.Signature sg -> Some sg
+        | _ -> failwith "Expansion shouldn't be anything other than a signature"
+        )
   in
-  let expansion = get_expansion () in
-  let items, env' = signature_items env i.parent expansion.content.items in
-  let expansion =
-    {
-      expansion with
-      content = { expansion.content with items; compiled = true };
-    }
+  let content =
+    match i.expansion.content with Some e -> Some e | None -> get_expansion ()
   in
+  let content, env' =
+    match content with
+    | Some e ->
+        let items, env = signature_items env i.parent e.items in
+        (Some { e with items }, env)
+    | None -> (None, env)
+  in
+  let expansion = { i.expansion with content } in
   ({ i with decl = include_decl env i.parent i.decl; expansion }, env')
 
 and simple_expansion :

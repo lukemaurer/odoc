@@ -188,7 +188,7 @@ and Include : sig
     s_class_types : (string * Names.ClassTypeName.t) list;
   }
 
-  type expansion = { shadowed : shadowed; content : Signature.t }
+  type expansion = { shadowed : shadowed; content : Signature.t option }
 
   (* Explicitly unexpanded decl *)
   type decl = Alias of Path.Module.t | ModuleType of ModuleType.U.expr
@@ -534,9 +534,11 @@ let umty_of_mty : ModuleType.expr -> ModuleType.U.expr option = function
     an exception for signature starting with an inline includes. *)
 let extract_signature_doc (s : Signature.t) =
   match (s.doc, s.items) with
-  | [], Include { expansion; status = `Inline; _ } :: _ ->
+  | ( [],
+      Include { expansion = { content = Some sg; _ }; status = `Inline; _ } :: _
+    ) ->
       (* A signature that starts with an [@inline] include inherits the
          top-comment from the expansion. This comment is not rendered for
          [include] items. *)
-      expansion.content.doc
+      sg.doc
   | doc, _ -> doc

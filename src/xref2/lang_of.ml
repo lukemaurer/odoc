@@ -387,7 +387,10 @@ module ExtractIDs = struct
           map.path_type;
     }
 
-  and include_ parent map i = signature parent map i.Include.expansion_
+  and include_ parent map i =
+    match i.Include.expansion_ with
+    | Some e -> signature parent map e
+    | None -> map
 
   and open_ parent map o = signature parent map o.Open.expansion
 
@@ -652,15 +655,16 @@ and include_decl :
 and include_ parent map i =
   let open Component.Include in
   let shadowed = combine_shadowed map.shadowed i.shadowed in
+  let content =
+    match i.expansion_ with
+    | None -> None
+    | Some e -> Some (signature parent { map with shadowed } e)
+  in
   {
     Odoc_model.Lang.Include.parent;
     doc = docs (parent :> Identifier.LabelParent.t) i.doc;
     decl = include_decl map parent i.decl;
-    expansion =
-      {
-        shadowed;
-        content = signature parent { map with shadowed } i.expansion_;
-      };
+    expansion = { shadowed; content };
     status = i.status;
     strengthened = Opt.map (Path.module_ map) i.strengthened;
     loc = i.loc;

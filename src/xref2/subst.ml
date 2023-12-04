@@ -821,7 +821,10 @@ and include_ s i =
     i with
     decl = include_decl s i.decl;
     strengthened = option_ module_path s i.strengthened;
-    expansion_ = apply_sig_map_sg s i.expansion_;
+    expansion_ =
+      (match i.expansion_ with
+      | None -> None
+      | Some e -> Some (apply_sig_map_sg s e));
   }
 
 and open_ s o =
@@ -999,12 +1002,13 @@ and rename_bound_idents s sg =
            s)
         (ClassType (id', r, c) :: sg)
         rest
-  | Include ({ expansion_; _ } as i) :: rest ->
-      let s, items = rename_bound_idents s [] expansion_.items in
+  | Include ({ expansion_ = Some e; _ } as i) :: rest ->
+      let s, items = rename_bound_idents s [] e.items in
       rename_bound_idents s
-        (Include { i with expansion_ = { expansion_ with items; removed = [] } }
+        (Include { i with expansion_ = Some { e with items; removed = [] } }
         :: sg)
         rest
+  | Include i :: rest -> rename_bound_idents s (Include i :: sg) rest
   | Open { expansion; doc } :: rest ->
       let s, items = rename_bound_idents s [] expansion.items in
       rename_bound_idents s

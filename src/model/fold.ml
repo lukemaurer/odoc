@@ -43,7 +43,10 @@ and signature_item ~f acc s_item =
 
 and docs ~f acc d = f acc (Doc d)
 
-and include_ ~f acc inc = signature ~f acc inc.expansion.content
+and include_ ~f acc inc =
+  match inc.expansion.content with
+  | None -> acc
+  | Some sg -> signature ~f acc sg
 
 and class_type ~f acc ct =
   (* This check is important because [is_internal] does not work on children of
