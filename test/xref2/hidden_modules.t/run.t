@@ -73,7 +73,53 @@ This shouldn't cause any warnings:
 There should be an expansion on `NotHidden`
 
   $ odoc_print test.odocl -r NonCanonical.NotHidden | jq '.type_.Alias[1]'
-  "None"
+  {
+    "Some": {
+      "Signature": {
+        "items": [
+          {
+            "Type": [
+              "Ordinary",
+              {
+                "id": {
+                  "`Type": [
+                    {
+                      "`Module": [
+                        {
+                          "`Module": [
+                            {
+                              "`Root": [
+                                "None",
+                                "Test"
+                              ]
+                            },
+                            "NonCanonical"
+                          ]
+                        },
+                        "NotHidden"
+                      ]
+                    },
+                    "t"
+                  ]
+                },
+                "locs": "None",
+                "doc": [],
+                "equation": {
+                  "params": [],
+                  "private_": "false",
+                  "manifest": "None",
+                  "constraints": []
+                },
+                "representation": "None"
+              }
+            ]
+          }
+        ],
+        "compiled": "false",
+        "doc": []
+      }
+    }
+  }
 
   $ odoc_print test.odocl -r NonCanonical.helpful
   {
