@@ -45,7 +45,8 @@ end
 
 let internal_counter = ref 0
 
-module Name : Name = struct
+module type NameTy = sig val is_module : bool end
+module Name(T : NameTy) : Name = struct
   type t = Hidden of string | Shadowed of string * int | Std of string
 
   let to_string = function
@@ -82,6 +83,7 @@ module Name : Name = struct
 
   let is_hidden = function
     | Std s ->
+        T.is_module &&
         let len = String.length s in
         let rec aux i =
           if i > len - 2 then false
@@ -136,16 +138,19 @@ module SimpleName : SimpleName = struct
     aux 0
 end
 
-module ModuleName = Name
-module ModuleTypeName = Name
-module TypeName = Name
+module TMod = struct let is_module = true end
+module TNotMod = struct let is_module = false end
+
+module ModuleName = Name(TMod)
+module ModuleTypeName = Name(TNotMod)
+module TypeName = Name(TNotMod)
 module ConstructorName = SimpleName
 module FieldName = SimpleName
 module ExtensionName = SimpleName
 module ExceptionName = SimpleName
-module ValueName = Name
-module ClassName = Name
-module ClassTypeName = Name
+module ValueName = Name(TNotMod)
+module ClassName = Name(TNotMod)
+module ClassTypeName = Name(TNotMod)
 module MethodName = SimpleName
 module InstanceVariableName = SimpleName
 module LabelName = SimpleName

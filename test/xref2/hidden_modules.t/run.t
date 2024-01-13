@@ -133,7 +133,21 @@ There should be an expansion on `NotHidden`
     "doc": [],
     "type_": {
       "Constr": [
-        { "`Resolved": { "`Identifier": { "`CoreType": "int" } } }, []
+        {
+          "`Resolved": {
+            "`Identifier": {
+              "`Type": [
+                {
+                  "`Module": [
+                    { "`Root": [ "None", "Test" ] }, "NonCanonical"
+                  ]
+                },
+                "hidden__type"
+              ]
+            }
+          }
+        },
+        []
       ]
     },
     "value": "Abstract"
