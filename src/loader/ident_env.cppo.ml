@@ -547,8 +547,7 @@ let add_items : Id.Signature.t -> item list -> t -> t = fun parent items env ->
 
     | `Module (t, is_hidden_item, loc) :: rest ->
       let name = Ident.name t in
-      let double_underscore = Odoc_model.Root.contains_double_underscore name in
-      let is_shadowed = module_name_exists name rest || double_underscore in
+      let is_shadowed = module_name_exists name rest in
       let identifier, shadowed =
         if is_shadowed 
         then Mk.module_(parent, ModuleName.shadowed_of_string name), t :: env.shadowed
